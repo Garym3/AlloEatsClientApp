@@ -21,12 +21,19 @@ import android.view.inputmethod.EditorInfo
 import android.widget.ArrayAdapter
 import android.widget.TextView
 
-import java.util.ArrayList
 import android.Manifest.permission.READ_CONTACTS
+import android.content.Intent
+import android.util.Log
+import android.widget.Button
+import com.facebook.*
+import com.facebook.login.LoginManager
+import com.facebook.login.LoginResult
 import fr.esgi.alloeatsclientapp.R
+import fr.esgi.alloeatsclientapp.models.User
 import fr.esgi.alloeatsclientapp.utils.Check
 
 import kotlinx.android.synthetic.main.activity_login.*
+import java.util.*
 
 
 /**
@@ -37,6 +44,8 @@ class LoginActivity : AppCompatActivity(), LoaderCallbacks<Cursor> {
      * Keep track of the login task to ensure we can cancel it if requested.
      */
     private var mAuthTask: UserLoginTask? = null
+    private var callbackManager : CallbackManager? = null
+    private val user = User("test@gmail.com", "password1", "Bob", "Marley", "0000000000", "City", "Address", "00000", "France")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,7 +65,36 @@ class LoginActivity : AppCompatActivity(), LoaderCallbacks<Cursor> {
 
         email_sign_in_button.setOnClickListener { attemptLogin() }
 
+        val btnLoginFacebook = findViewById<Button>(R.id.facebook_login_button)
+        btnLoginFacebook.setOnClickListener({
+            callbackManager = CallbackManager.Factory.create()
 
+            LoginManager.getInstance().logInWithReadPermissions(
+                    this, Arrays.asList("public_profile", "email"))
+
+            LoginManager.getInstance().registerCallback(callbackManager,
+                object : FacebookCallback<LoginResult> {
+                    override fun onSuccess(loginResult : LoginResult?) {
+                        Log.d("LoginActivity",
+                                "Facebook token: " + loginResult?.accessToken?.token)
+                        startActivity(Intent(applicationContext, HomeActivity::class.java))
+                    }
+
+                    override fun onCancel() {
+                        Log.d("LoginActivity", "Facebook onCancel.")
+                    }
+
+                    override fun onError(exception : FacebookException?) {
+                        Log.d("LoginActivity", "Facebook onError.")
+                    }
+                })
+        })
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        callbackManager?.onActivityResult(requestCode, resultCode, data)
     }
 
     private fun populateAutoComplete() {
@@ -277,6 +315,7 @@ class LoginActivity : AppCompatActivity(), LoaderCallbacks<Cursor> {
 
             if (success!!) {
                 finish()
+                startActivity(Intent(applicationContext, HomeActivity::class.java))
             } else {
                 password.error = getString(R.string.error_incorrect_password)
                 password.requestFocus()
@@ -300,6 +339,6 @@ class LoginActivity : AppCompatActivity(), LoaderCallbacks<Cursor> {
          * A dummy authentication store containing known user names and passwords.
          * TODO: remove after connecting to a real authentication system.
          */
-        private val DUMMY_CREDENTIALS = arrayOf("myclient@gmail.com:hello000", "myotherclient@hotmail.com:world000")
+        private val DUMMY_CREDENTIALS = arrayOf("myclient@gmail.com:hello123", "myotherclient@hotmail.com:world000")
     }
 }

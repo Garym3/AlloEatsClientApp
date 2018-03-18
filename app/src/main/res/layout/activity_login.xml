@@ -72,6 +72,20 @@
                 android:text="@string/action_sign_in"
                 android:textStyle="bold" />
 
+
+            <Button
+                android:id="@+id/facebook_login_button"
+                android:layout_width="match_parent"
+                android:layout_height="33dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="30dp"
+                android:layout_marginTop="30dp"
+                android:background="@drawable/com_facebook_button_background"
+                android:text="@string/facebook_sign_in"
+                android:textAlignment="center"
+                android:textColor="#fff"
+                android:textSize="14sp" />
+
         </LinearLayout>
     </ScrollView>
 </LinearLayout>
