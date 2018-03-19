@@ -1,5 +1,7 @@
 package fr.esgi.alloeatsclientapp.utils
 
+import fr.esgi.alloeatsclientapp.models.User
+
 
 class Global {
     companion object {
@@ -7,5 +9,6 @@ class Global {
         const val passwordMinLength = 8
         const val passwordRequiredChars = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}$"
 
+        val currentConnectedUser = User("test@gmail.com", "password1", "Bob", "Marley", "0000000000", "City", "Address", "00000", "France")
     }
 }

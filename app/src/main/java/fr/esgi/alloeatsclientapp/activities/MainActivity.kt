@@ -1,6 +1,5 @@
 package fr.esgi.alloeatsclientapp.activities
 
-import android.content.ClipData
 import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.Snackbar
@@ -10,7 +9,7 @@ import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.Button
+import android.widget.TextView
 import com.facebook.AccessToken
 import com.facebook.GraphRequest
 import com.facebook.HttpMethod
@@ -27,11 +26,16 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         setSupportActionBar(toolbar)
 
         fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+            Snackbar.make(view, "Hello", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show()
         }
 
+        val isStandardAccount = true
 
+        val usernameTextView = findViewById<TextView>(R.id.username_textview)
+        val emailTextView = findViewById<TextView>(R.id.email_textview)
+
+        usernameTextView.text = if (AccessToken.getCurrentAccessToken() != null) AccessToken.getCurrentAccessToken().userId else "Facebook"
 
         val toggle = ActionBarDrawerToggle(
                 this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
