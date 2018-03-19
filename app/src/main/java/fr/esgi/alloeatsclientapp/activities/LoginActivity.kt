@@ -77,7 +77,7 @@ class LoginActivity : AppCompatActivity(), LoaderCallbacks<Cursor> {
                     override fun onSuccess(loginResult : LoginResult?) {
                         Log.d("LoginActivity",
                                 "Facebook token: " + loginResult?.accessToken?.token)
-                        startActivity(Intent(applicationContext, HomeActivity::class.java))
+                        startActivity(Intent(applicationContext, MainActivity::class.java))
                     }
 
                     override fun onCancel() {
@@ -89,6 +89,12 @@ class LoginActivity : AppCompatActivity(), LoaderCallbacks<Cursor> {
                     }
                 })
         })
+    }
+
+    override fun onResume() {
+        super.onResume()
+        email.text = null
+        password.text = null
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -314,8 +320,7 @@ class LoginActivity : AppCompatActivity(), LoaderCallbacks<Cursor> {
             showProgress(false)
 
             if (success!!) {
-                finish()
-                startActivity(Intent(applicationContext, HomeActivity::class.java))
+                startActivity(Intent(applicationContext, MainActivity::class.java))
             } else {
                 password.error = getString(R.string.error_incorrect_password)
                 password.requestFocus()

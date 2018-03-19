@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="false"
-    tools:context="fr.esgi.alloeatsclientapp.activities.HomeActivity">
+    tools:context="fr.esgi.alloeatsclientapp.activities.MainActivity">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/app_bar"
