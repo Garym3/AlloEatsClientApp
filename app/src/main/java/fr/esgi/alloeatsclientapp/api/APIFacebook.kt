@@ -47,7 +47,7 @@ class APIFacebook{
                     }
                 }
                 val parameters = Bundle()
-                parameters.putString("fields", "id,name,email,phone")
+                parameters.putString("fields", "id,name,email,phone,address")
                 request.parameters = parameters
                 request.executeAsync()
             }
