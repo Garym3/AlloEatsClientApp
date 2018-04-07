@@ -9,12 +9,14 @@ import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.TextView
 import com.facebook.AccessToken
 import com.facebook.GraphRequest
 import com.facebook.HttpMethod
 import com.facebook.login.LoginManager
 import fr.esgi.alloeatsclientapp.R
+import fr.esgi.alloeatsclientapp.utils.Global
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 
@@ -30,19 +32,30 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     .setAction("Action", null).show()
         }
 
-        val isStandardAccount = true
-
-        val usernameTextView = findViewById<TextView>(R.id.username_textview)
-        val emailTextView = findViewById<TextView>(R.id.email_textview)
-
-        usernameTextView.text = if (AccessToken.getCurrentAccessToken() != null) AccessToken.getCurrentAccessToken().userId else "Facebook"
-
         val toggle = ActionBarDrawerToggle(
                 this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
         drawer_layout.addDrawerListener(toggle)
         toggle.syncState()
 
         nav_view.setNavigationItemSelectedListener(this)
+
+        val isStandardAccount = Global.currentUser != null
+
+        val navigationView = findViewById<NavigationView>(R.id.nav_view)
+        val hView = navigationView.getHeaderView(0)
+        val usernameTextView = hView.findViewById<TextView>(R.id.username_textview)
+        val emailTextView = hView.findViewById<TextView>(R.id.email_textview)
+
+        usernameTextView.text =
+                if(isStandardAccount) Global.currentUser?.username
+                else AccessToken.getCurrentAccessToken().userId
+
+        emailTextView.text =
+                if(isStandardAccount) Global.currentUser?.mailAddress
+                else "Facebook@email.com"
+
+
+        //TODO: FB email
     }
 
     override fun onBackPressed() {
@@ -70,7 +83,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        // Handle navigation view item clicks here.
         when (item.itemId) {
             R.id.nav_maps -> {
                 //startActivity(Intent(applicationContext, GoogleMapsActivity::class.java))
@@ -93,6 +105,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     }).executeAsync()
                 } else {
                     // Standard logout
+                    Global.currentUser = null
                     finish()
                 }
             }

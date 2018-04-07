@@ -21,6 +21,8 @@ import java.util.Locale
 
 abstract class APIRequester {
 
+    protected val apiAddress: String? = "http://192.168.1.12" + ":" + "8090"
+
     /**
      * Build a HTTP Request and get the response of the API
      * @param URL API Route URL
