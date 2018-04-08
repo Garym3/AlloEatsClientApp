@@ -1,7 +1,8 @@
 <resources>
     <string name="app_name">AlloEatsClientApp</string>
+    <string name="ws_Password">FeNBGjzDG354@ofe*$32Rfsss4F</string>
 
-    <!-- Strings related to login -->
+    <!-- LoginActivity -->
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>
     <string name="action_sign_in">Sign in or register</string>
@@ -13,7 +14,31 @@
     <string name="permission_rationale">"Contacts permissions are needed for providing email completions."</string>
     <string name="facebook_app_id">166817300640477</string>
     <string name="fb_login_protocol_scheme">fb166817300640477</string>
-    <!-- MainActivity title text -->
+
+    <!-- CreateAccountActivity -->
+    <string name="title_textView">Please create your account</string>
+    <string name="email_address_textView">Email Address:</string>
+    <string name="password_textView">Password:</string>
+    <string name="firstName_textView">First Name:</string>
+    <string name="lastName_textView">Last Name:</string>
+    <string name="country_textView">Country:</string>
+    <string name="city_textView">City:</string>
+    <string name="address_textView">Address:</string>
+    <string name="zipCode_textView">Zip Code:</string>
+    <string name="phoneNumber_textView">Phone Number:</string>
+    <string name="email_address_textView_ContentDesc">Email Address</string>
+    <string name="password_textView_hint">Password</string>
+    <string name="firstName_textView_hint">First Name</string>
+    <string name="lastName_textView_hint">Last Name</string>
+    <string name="country_textView_hint">Country</string>
+    <string name="city_textView_hint">City Country</string>
+    <string name="address_textView_hint">Address</string>
+    <string name="zipCode_textView_hint">Zip Code</string>
+    <string name="phoneNumber_textView_hint">Phone Number</string>
+    <string name="abort_button">Abort</string>
+    <string name="register_button">Register</string>
+
+    <!-- MainActivity -->
     <string name="action_settings">Settings</string>
     <string name="facebook_sign_in">Continue with Facebook</string>
     <string name="logout_button">Logout</string>
@@ -22,7 +47,6 @@
     <string name="favorites_item">Favorites</string>
     <string name="settings_item">Settings</string>
     <string name="logout_item">Logout</string>
-
 
     <!-- Strings related to Settings -->
 

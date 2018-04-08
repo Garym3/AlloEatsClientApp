@@ -186,11 +186,15 @@ class LoginActivity : AppCompatActivity(), LoaderCallbacks<Cursor> {
             focusView?.requestFocus()
         } else {
             showProgress(true)
-            KillerTask({
-                apiUser?.checkAccount(this.applicationContext, emailStr, passwordStr)
-                showProgress(false)
-            }).go()
-            showProgress(false)
+            KillerTask(
+                    {
+                        apiUser?.checkAccount(this.applicationContext, emailStr, passwordStr)
+                    },
+                    {showProgress(false)},
+                    {
+                        Log.e("onErrorResponse", it?.message)
+                        showProgress(false)
+                    }).go()
         }
     }
 
@@ -207,9 +211,6 @@ class LoginActivity : AppCompatActivity(), LoaderCallbacks<Cursor> {
      */
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
     private fun showProgress(show: Boolean) {
-        // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
-        // for very easy animations. If available, use these APIs to fade-in
-        // the progress spinner.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
             val shortAnimTime = resources.getInteger(android.R.integer.config_shortAnimTime).toLong()
 
@@ -233,8 +234,6 @@ class LoginActivity : AppCompatActivity(), LoaderCallbacks<Cursor> {
                         }
                     })
         } else {
-            // The ViewPropertyAnimator APIs are not available, so simply show
-            // and hide the relevant UI components.
             login_progress.visibility = if (show) View.VISIBLE else View.GONE
             login_form.visibility = if (show) View.GONE else View.VISIBLE
         }
@@ -292,11 +291,5 @@ class LoginActivity : AppCompatActivity(), LoaderCallbacks<Cursor> {
          * Id to identity READ_CONTACTS permission request.
          */
         private val REQUEST_READ_CONTACTS = 0
-
-        /**
-         * A dummy authentication store containing known user names and passwords.
-         * TODO: remove after connecting to a real authentication system.
-         */
-        //private val DUMMY_CREDENTIALS = arrayOf("myclient@gmail.com:hello123", "myotherclient@hotmail.com:world000")
     }
 }

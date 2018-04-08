@@ -46,29 +46,28 @@ class APIUser : APIRequester() {
                             try {
                                 when {
                                     result.getString("result").equals("Wrong Password", ignoreCase = true) -> {
-                                        Log.e("response", "WsPassword is incorrect")
+                                        Log.e("onSuccessResponse:Failure", "WsPassword is incorrect")
                                     }
                                     result.getBoolean("result") -> {
-                                        Log.i("response", "Account does exist")
-                                        val intent = Intent(context, MainActivity::class.java)
+                                        Log.i("onSuccessResponse:Success", "Account does exist")
 
                                         Global.currentUser = User(username, "a.a@gmail.com",
                                                 "FirstName", "LastName",
                                                 "0000000000", "City",
                                                 "Address", "00000", "France")
 
-                                        context.startActivity(intent)
+                                        Log.i("onSuccessResponse:Success", "Account retrieved")
+
+                                        context.startActivity(Intent(context, MainActivity::class.java))
                                     }
                                     else -> {
-                                        Log.i("response", "Account doesn't exist")
-                                        val intent = Intent(context, CreateAccountActivity::class.java)
+                                        Log.i("onSuccessResponse:Failure", "Account doesn't exist")
 
-                                        context.startActivity(intent)
+                                        context.startActivity(Intent(context, CreateAccountActivity::class.java))
                                     }
                                 }
                             } catch (e: Exception) {
                                 Log.e("onSuccessResponse:Failure", e.message)
-
                             }
                         }
 
@@ -76,7 +75,7 @@ class APIUser : APIRequester() {
                             if (error.networkResponse == null) return
 
                             val errorData = String(error.networkResponse.data)
-                            Log.e("response", errorData)
+                            Log.e("onErrorResponse", errorData)
                         }
                     })
         } catch (e: Exception) {
@@ -93,33 +92,37 @@ class APIUser : APIRequester() {
      * @throws JSONException JSONException describing the anomaly within the JSON object sent
      */
     @Throws(Exception::class)
-    fun createAccount(context: Context, username: String, password: String, mail: String,
-                      city: String, address: String, zipCode: String, telNumber: String,
-                      firstname: String, lastname: String) {
+    fun createAccount(context: Context, fields: List<String>?) {
 
-        val accountNode = JSONObject()
         val contentNode = JSONObject()
 
-        contentNode.put("username", username)
-        contentNode.put("password", password)
-        contentNode.put("mail", mail)
-        contentNode.put("city", city)
-        contentNode.put("address", address)
-        contentNode.put("zipcode", zipCode)
-        contentNode.put("telnumber", telNumber)
-        contentNode.put("firstname", firstname)
-        contentNode.put("lastname", lastname)
-
-        accountNode.put("account", contentNode)
+        contentNode.put("username", fields?.get(0))
+        contentNode.put("password", fields?.get(1))
+        contentNode.put("mail", fields?.get(0)) // mail == username (for the moment)
+        contentNode.put("city", fields?.get(2))
+        contentNode.put("address", fields?.get(3))
+        contentNode.put("zipcode", fields?.get(4))
+        contentNode.put("country", fields?.get(5))
+        contentNode.put("number", fields?.get(6))
+        contentNode.put("firstname", fields?.get(7))
+        contentNode.put("lastname", fields?.get(8))
+        contentNode.put("wspassword", Global.wsPassword)
 
         try {
-            readFromUrl(route + "createAccount", accountNode, Request.Method.POST, context,
+            readFromUrl(route + "createAccount", contentNode, Request.Method.POST, context,
                     object : APICallback {
                         override fun onSuccessResponse(result: JSONObject) {
                             try {
                                 if (result.getBoolean("result")) {
-                                    Log.e("response", "Account successfully created")
+                                    Global.currentUser = User(fields!![0], fields[1], fields[0],
+                                            fields[2], fields[3], fields[4], fields[5], fields[6],
+                                            fields[7])
 
+                                    Log.i("response", "Account successfully created")
+
+                                    context.startActivity(Intent(context, MainActivity::class.java))
+                                } else {
+                                    Log.e("onSuccessResponse:Failure", "Couldn't create account.")
                                 }
                             } catch (e: Exception) {
                                 Log.e("onSuccessResponse:Failure", e.message)
@@ -130,7 +133,7 @@ class APIUser : APIRequester() {
                             if (error.networkResponse == null) return
 
                             val errorData = String(error.networkResponse.data)
-                            Log.e("response", errorData)
+                            Log.e("onErrorResponse", errorData)
                         }
                     })
         } catch (e: Exception) {

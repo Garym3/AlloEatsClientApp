@@ -16,11 +16,11 @@ class APIFacebook{
         LoginManager.getInstance().registerCallback(callbackManager!!, object : FacebookCallback<LoginResult> {
             override fun onSuccess(result: LoginResult) {
                 val request = GraphRequest.newMeRequest(accessToken) { jsonObject, _ ->
-                    var facebookId = ""
-                    var facebookName = ""
-                    var facebookEmail = ""
-                    var facebookPhone = ""
-                    var facebookAddress = ""
+                    val facebookId: String?
+                    val facebookName: String?
+                    val facebookEmail: String?
+                    val facebookPhone: String?
+                    val facebookAddress: String?
 
                     try {
                         if (jsonObject.has("id")) {
@@ -53,11 +53,11 @@ class APIFacebook{
             }
 
             override fun onCancel() {
-                Log.d("LoginActivity", "Facebook onCancel.")
+                Log.d("onCancel", "Facebook onCancel.")
             }
 
             override fun onError(exception : FacebookException?) {
-                Log.e("LoginActivity", "Facebook onError.\n" + exception?.message)
+                Log.e("onError", "Facebook onError.\n" + exception?.message)
             }
         })
     }
