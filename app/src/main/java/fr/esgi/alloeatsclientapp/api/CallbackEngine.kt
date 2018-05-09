@@ -5,7 +5,7 @@ import com.android.volley.VolleyError
 import org.json.JSONObject
 
 
-interface APICallback {
+interface CallbackEngine {
     // Handling the response from web server
     fun onSuccessResponse(result: JSONObject)
 

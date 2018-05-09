@@ -4,7 +4,6 @@ import android.content.Context
 
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
-import fr.esgi.alloeatsclientapp.api.APICallback
 
 import org.apache.http.NameValuePair
 import org.apache.http.message.BasicNameValuePair
@@ -19,7 +18,7 @@ import java.util.HashMap
 import java.util.Locale
 
 
-abstract class APIRequester {
+abstract class RequestEngine {
 
     protected val apiAddress: String? = "http://192.168.1.12" + ":" + "8090"
 
@@ -29,12 +28,12 @@ abstract class APIRequester {
      * @param content List for body HTTP Request
      */
     @Throws(Exception::class)
-    protected fun readFromUrl(URL: String, content: JSONObject, methodRequest: Int, caller: Context, callback: APICallback) {
+    protected fun readFromUrl(URL: String, content: JSONObject, methodRequest: Int, caller: Context, callbackEngine: CallbackEngine) {
         try {
             val queue = Volley.newRequestQueue(caller)
 
             val request = object : JsonObjectRequest(methodRequest, URL, content,
-                    ({ callback.onSuccessResponse(it) }), ({ callback.onErrorResponse(it) })
+                    ({ callbackEngine.onSuccessResponse(it) }), ({ callbackEngine.onErrorResponse(it) })
             ) {
                 override fun getHeaders(): MutableMap<String, String> {
                     val params = HashMap<String, String>()

@@ -5,8 +5,6 @@
     <!-- LoginActivity -->
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>
-    <string name="action_sign_in">Sign in or register</string>
-    <string name="action_sign_in_short">Sign in</string>
     <string name="error_invalid_email">This email address is invalid</string>
     <string name="error_invalid_password">This password must have at least 8 characters with a number and a letter</string>
     <string name="error_incorrect_password">This password is incorrect</string>
@@ -14,6 +12,13 @@
     <string name="permission_rationale">"Contacts permissions are needed for providing email completions."</string>
     <string name="facebook_app_id">166817300640477</string>
     <string name="fb_login_protocol_scheme">fb166817300640477</string>
+    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="facebook_sign_in">Continue with Facebook</string>
+    <string name="google_sign_in">Continue with Google</string>
+    <string name="twitter_sign_in">Continue with Twitter</string>
+    <string name="loginActivity_textView_headline_text">Please choose one way to log in</string>
+    <string name="alloeats_title">AlloEats</string>
 
     <!-- CreateAccountActivity -->
     <string name="title_textView">Please create your account</string>
@@ -40,7 +45,6 @@
 
     <!-- MainActivity -->
     <string name="action_settings">Settings</string>
-    <string name="facebook_sign_in">Continue with Facebook</string>
     <string name="logout_button">Logout</string>
     <string name="title_activity_settings">Settings</string>
     <string name="maps_item">Google Maps</string>

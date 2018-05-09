@@ -1,4 +1,4 @@
-package fr.esgi.alloeatsclientapp.api.requests
+package fr.esgi.alloeatsclientapp.api.user
 
 import android.content.Context
 import android.content.Intent
@@ -12,13 +12,13 @@ import fr.esgi.alloeatsclientapp.activities.MainActivity
 import org.json.JSONException
 import org.json.JSONObject
 
-import fr.esgi.alloeatsclientapp.api.APICallback
-import fr.esgi.alloeatsclientapp.api.APIRequester
+import fr.esgi.alloeatsclientapp.api.CallbackEngine
+import fr.esgi.alloeatsclientapp.api.RequestEngine
 import fr.esgi.alloeatsclientapp.models.User
 import fr.esgi.alloeatsclientapp.utils.Global
 
 
-class APIUser : APIRequester() {
+class UserAuth : RequestEngine() {
 
     private val route : String? = "$apiAddress/API/authentication/"
 
@@ -41,7 +41,7 @@ class APIUser : APIRequester() {
 
         try {
             readFromUrl(route + "checkAccount", contentNode, Request.Method.POST, context,
-                    object : APICallback {
+                    object : CallbackEngine {
                         override fun onSuccessResponse(result: JSONObject) {
                             try {
                                 when {
@@ -51,7 +51,7 @@ class APIUser : APIRequester() {
                                     result.getBoolean("result") -> {
                                         Log.i("onSuccessResponse:Success", "Account does exist")
 
-                                        Global.currentUser = User(username, "a.a@gmail.com",
+                                        Global.CurrentUser.user = User(username, "a.a@gmail.com",
                                                 "FirstName", "LastName",
                                                 "0000000000", "City",
                                                 "Address", "00000", "France")
@@ -110,11 +110,11 @@ class APIUser : APIRequester() {
 
         try {
             readFromUrl(route + "createAccount", contentNode, Request.Method.POST, context,
-                    object : APICallback {
+                    object : CallbackEngine {
                         override fun onSuccessResponse(result: JSONObject) {
                             try {
                                 if (result.getBoolean("result")) {
-                                    Global.currentUser = User(fields!![0], fields[1], fields[0],
+                                    Global.CurrentUser.user = User(fields!![0], fields[1], fields[0],
                                             fields[2], fields[3], fields[4], fields[5], fields[6],
                                             fields[7])
 

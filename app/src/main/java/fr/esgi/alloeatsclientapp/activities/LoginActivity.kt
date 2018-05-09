@@ -23,13 +23,16 @@ import android.widget.TextView
 import android.Manifest.permission.READ_CONTACTS
 import android.content.Intent
 import android.util.Log
+import android.view.WindowManager
 import android.widget.Button
 import com.facebook.*
 import com.facebook.login.LoginManager
 import com.facebook.login.LoginResult
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.inaka.killertask.KillerTask
 import fr.esgi.alloeatsclientapp.R
-import fr.esgi.alloeatsclientapp.api.requests.APIUser
+import fr.esgi.alloeatsclientapp.api.user.SocialUserAuth
+import fr.esgi.alloeatsclientapp.api.user.UserAuth
 import fr.esgi.alloeatsclientapp.utils.Check
 
 import kotlinx.android.synthetic.main.activity_login.*
@@ -43,49 +46,19 @@ class LoginActivity : AppCompatActivity(), LoaderCallbacks<Cursor> {
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
      */
-    private var apiUser : APIUser? = APIUser()
+    private var userAuth : UserAuth? = UserAuth()
     private var callbackManager : CallbackManager? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        supportActionBar!!.hide()
         setContentView(R.layout.activity_login)
         populateAutoComplete()
-        password.setOnEditorActionListener(TextView.OnEditorActionListener { _, id, _ ->
-            if (id == EditorInfo.IME_ACTION_DONE || id == EditorInfo.IME_NULL) {
-                attemptLogin()
-                return@OnEditorActionListener true
-            }
-            false
-        })
 
-        email_sign_in_button.setOnClickListener { attemptLogin() }
+        // Hides keyboard on focus only
+        window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN)
 
-        val btnLoginFacebook = findViewById<Button>(R.id.facebook_login_button)
-        btnLoginFacebook.setOnClickListener({
-            callbackManager = CallbackManager.Factory.create()
-
-            LoginManager.getInstance().logInWithReadPermissions(
-                    this, Arrays.asList("public_profile", "email"))
-
-            LoginManager.getInstance().registerCallback(callbackManager,
-                object : FacebookCallback<LoginResult> {
-                    override fun onSuccess(loginResult : LoginResult?) {
-                        Log.d("LoginActivity",
-                                "Facebook token: " + loginResult?.accessToken?.token)
-                        startActivity(Intent(applicationContext, MainActivity::class.java))
-                    }
-
-                    override fun onCancel() {
-                        Log.d("LoginActivity", "Facebook onCancel.")
-                    }
-
-                    override fun onError(exception : FacebookException?) {
-                        Log.d("LoginActivity", "Facebook onError.")
-                    }
-                })
-        })
+        handleConnection()
     }
 
     override fun onResume() {
@@ -144,10 +117,6 @@ class LoginActivity : AppCompatActivity(), LoaderCallbacks<Cursor> {
      * errors are presented and no actual login attempt is made.
      */
     private fun attemptLogin() {
-        /*if (apiUser != null) {
-            return
-        }*/
-
         // Reset errors.
         email.error = null
         password.error = null
@@ -188,9 +157,11 @@ class LoginActivity : AppCompatActivity(), LoaderCallbacks<Cursor> {
             showProgress(true)
             KillerTask(
                     {
-                        apiUser?.checkAccount(this.applicationContext, emailStr, passwordStr)
+                        userAuth?.checkAccount(this.applicationContext, emailStr, passwordStr)
                     },
-                    {showProgress(false)},
+                    {
+                        showProgress(false)
+                    },
                     {
                         Log.e("onErrorResponse", it?.message)
                         showProgress(false)
@@ -275,6 +246,58 @@ class LoginActivity : AppCompatActivity(), LoaderCallbacks<Cursor> {
                 android.R.layout.simple_dropdown_item_1line, emailAddressCollection)
 
         email.setAdapter(adapter)
+    }
+
+    private fun handleConnection(){
+        email_sign_in_button.setOnClickListener { attemptLogin() }
+
+        password.setOnEditorActionListener(TextView.OnEditorActionListener { _, id, _ ->
+            if (id == EditorInfo.IME_ACTION_DONE || id == EditorInfo.IME_NULL) {
+                attemptLogin()
+                return@OnEditorActionListener true
+            }
+            false
+        })
+
+        val btnLoginFacebook = findViewById<Button>(R.id.facebook_login_button)
+        val btnLoginGoogle = findViewById<Button>(R.id.google_login_button)
+        val btnLoginTwitter = findViewById<Button>(R.id.twitter_login_button)
+
+        btnLoginFacebook.setOnClickListener({
+            SocialUserAuth.connectFacebook(applicationContext)
+        })
+
+        btnLoginGoogle.setOnClickListener({
+            SocialUserAuth.connectGoogle(applicationContext)
+        })
+
+        btnLoginTwitter.setOnClickListener({
+            SocialUserAuth.connectTwitter(applicationContext)
+        })
+
+        /*btnLoginFacebook.setOnClickListener({
+            callbackManager = CallbackManager.Factory.create()
+
+            LoginManager.getInstance().logInWithReadPermissions(
+                    this, Arrays.asList("public_profile", "email"))
+
+            LoginManager.getInstance().registerCallback(callbackManager,
+                object : FacebookCallback<LoginResult> {
+                    override fun onSuccess(loginResult : LoginResult?) {
+                        Log.d("LoginActivity",
+                                "Facebook token: " + loginResult?.accessToken?.token)
+                        startActivity(Intent(applicationContext, MainActivity::class.java))
+                    }
+
+                    override fun onCancel() {
+                        Log.d("LoginActivity", "Facebook onCancel.")
+                    }
+
+                    override fun onError(exception : FacebookException?) {
+                        Log.d("LoginActivity", "Facebook onError.")
+                    }
+                })
+        })*/
     }
 
     object ProfileQuery {

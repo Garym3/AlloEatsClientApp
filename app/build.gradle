@@ -14,10 +14,20 @@ android {
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
+    //Signing configurations for build variants "release"
+    signingConfigs {
+        release {
+            storeFile file("C:\\Users\\Olivier\\.android\\alloeatsclient.jks")
+            storePassword "alloeats"
+            keyAlias "AlloEatsClient"
+            keyPassword "alloeats"
+        }
+    }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
     configurations.all {
@@ -38,13 +48,35 @@ dependencies {
     //noinspection GradleCompatible
     implementation 'com.android.support:appcompat-v7:26.1.0'
     implementation 'com.android.support:design:26.1.0'
-    implementation 'com.facebook.android:facebook-login:4.31.0'
+    //implementation 'com.facebook.android:facebook-login:4.31.0'
     implementation 'com.android.support:support-v4:26.1.0'
-    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.0'
     testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.1'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
-    implementation 'com.google.http-client:google-http-client-android:1.23.0'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     implementation 'com.android.volley:volley:1.1.0'
     implementation 'com.github.inaka:killertask:v1.4'
+    implementation 'com.jaychang:simpleauth:2.0.1'
+    implementation 'com.jaychang:simpleauth-facebook:2.0.1'
+    implementation 'com.jaychang:simpleauth-google:2.0.1'
+    implementation 'com.jaychang:simpleauth-twitter:2.0.1'
+    implementation 'com.google.firebase:firebase-core:15.0.2'
+    implementation 'com.google.firebase:firebase-database:15.0.1'
+    implementation 'com.google.firebase:firebase-auth:15.1.0'
+    implementation 'com.google.firebase:firebase-config:15.0.2'
+    implementation 'com.firebaseui:firebase-ui-auth:3.1.0'
+    implementation 'com.google.android.gms:play-services-auth:15.0.1'
+    implementation 'com.google.api-client:google-api-client:1.23.0'
+    implementation 'com.google.api-client:google-api-client-android:1.23.0'
+    implementation 'com.google.apis:google-api-services-people:v1-rev139-1.22.0'
+    implementation 'com.google.http-client:google-http-client-android:1.23.0'
 }
+
+android.defaultConfig.manifestPlaceholders = [
+        facebookAppId        : "166817300640477",
+        googleWebClientId    : "AIzaSyA5-msWrY9MenNGx_BzNQs2kBsr-r0TOtI",
+        twitterConsumerKey   : "crfMRqsqhgw3A4rDdC90ZERtw",
+        twitterConsumerSecret: "aBNNbEuyeT1mu94n3mZ6riSih9FoROU93wNnuM6wHKWd03aB06"
+]
+
+apply plugin: 'com.google.gms.google-services'

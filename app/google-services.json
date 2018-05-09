@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "202736207918",
+    "firebase_url": "https://alloeatsclientapp.firebaseio.com",
+    "project_id": "alloeatsclientapp",
+    "storage_bucket": "alloeatsclientapp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:202736207918:android:9b1fbc530447cbb2",
+        "android_client_info": {
+          "package_name": "fr.esgi.alloeatsclientapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "202736207918-8h2p5c1fbsld6ip54lbov4p15bp0uftp.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "fr.esgi.alloeatsclientapp",
+            "certificate_hash": "3fbe1ffcc1b9ff38fd7502703821774a94cd9589"
+          }
+        },
+        {
+          "client_id": "202736207918-k06pcgsbrbige0bfhamlvb2k28lt8r5s.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD5rEsDILNryR8EVPxHqb-tyM6bxxYGi8k"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "202736207918-k06pcgsbrbige0bfhamlvb2k28lt8r5s.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

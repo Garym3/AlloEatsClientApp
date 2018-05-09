@@ -9,13 +9,14 @@ import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
 import android.widget.TextView
 import com.facebook.AccessToken
 import com.facebook.GraphRequest
 import com.facebook.HttpMethod
 import com.facebook.login.LoginManager
+import com.jaychang.sa.SocialUser
 import fr.esgi.alloeatsclientapp.R
+import fr.esgi.alloeatsclientapp.api.user.SocialUserAuth
 import fr.esgi.alloeatsclientapp.utils.Global
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
@@ -39,23 +40,30 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         nav_view.setNavigationItemSelectedListener(this)
 
-        val isStandardAccount = Global.currentUser != null
+        val isStandardAccount = Global.CurrentUser.user != null
 
         val navigationView = findViewById<NavigationView>(R.id.nav_view)
         val hView = navigationView.getHeaderView(0)
         val usernameTextView = hView.findViewById<TextView>(R.id.username_textview)
         val emailTextView = hView.findViewById<TextView>(R.id.email_textview)
 
+        val socialUser: SocialUser? =
+                if (!isStandardAccount)
+                    intent.getParcelableExtra<SocialUser>("socialUser") as SocialUser
+                else null
+
         usernameTextView.text =
-                if(isStandardAccount) Global.currentUser?.username
-                else AccessToken.getCurrentAccessToken().userId
+                if(isStandardAccount) Global.CurrentUser.user?.username
+                else socialUser?.username
 
         emailTextView.text =
-                if(isStandardAccount) Global.currentUser?.mailAddress
-                else "Facebook@email.com"
+                if(isStandardAccount) Global.CurrentUser.user?.mailAddress
+                else socialUser?.email
+    }
 
-
-        //TODO: FB email
+    override fun onDestroy() {
+        super.onDestroy()
+        disconnectUser()
     }
 
     override fun onBackPressed() {
@@ -94,7 +102,16 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 startActivity(Intent(applicationContext, SettingsActivity::class.java))
             }
             R.id.nav_logout -> {
-                // Facebook Logout
+                finish()
+            }
+        }
+
+        drawer_layout.closeDrawer(GravityCompat.START)
+        return true
+    }
+
+    private fun disconnectUser(){
+        /*// Facebook Logout
                 if (AccessToken.getCurrentAccessToken() != null) {
                     GraphRequest(AccessToken.getCurrentAccessToken(), "/me/permissions/",
                             null, HttpMethod.DELETE, GraphRequest.Callback {
@@ -105,13 +122,22 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     }).executeAsync()
                 } else {
                     // Standard logout
-                    Global.currentUser = null
+                    Global.CurrentUser.user = null
                     finish()
+                }*/
+
+        if(Global.CurrentUser.user != null) {
+            Global.CurrentUser.user = null
+        } else {
+            try {
+                SocialUserAuth.disconnect(SocialUserAuth.FACEBOOK)
+            } catch (e: Exception){
+                try {
+                    SocialUserAuth.disconnect(SocialUserAuth.TWITTER)
+                } catch (e: Exception){
+                    SocialUserAuth.disconnect(SocialUserAuth.GOOGLE)
                 }
             }
         }
-
-        drawer_layout.closeDrawer(GravityCompat.START)
-        return true
     }
 }

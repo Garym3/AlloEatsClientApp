@@ -9,6 +9,9 @@ class Global {
         const val passwordMinLength = 8
         const val passwordRequiredChars = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}$"
         const val wsPassword = "FeNBGjzDG354@ofe*\$32Rfsss4F"
-        var currentUser : User? = null
+    }
+
+    object CurrentUser {
+        var user: User? = null
     }
 }
