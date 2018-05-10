@@ -1,21 +1,25 @@
 {
   "project_info": {
-    "project_number": "202736207918",
-    "firebase_url": "https://alloeatsclientapp.firebaseio.com",
-    "project_id": "alloeatsclientapp",
-    "storage_bucket": "alloeatsclientapp.appspot.com"
+    "project_number": "935138601142",
+    "firebase_url": "https://alloeatsclient-1525946958052.firebaseio.com",
+    "project_id": "alloeatsclient-1525946958052",
+    "storage_bucket": "alloeatsclient-1525946958052.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:202736207918:android:9b1fbc530447cbb2",
+        "mobilesdk_app_id": "1:935138601142:android:9b1fbc530447cbb2",
         "android_client_info": {
           "package_name": "fr.esgi.alloeatsclientapp"
         }
       },
       "oauth_client": [
         {
-          "client_id": "202736207918-8h2p5c1fbsld6ip54lbov4p15bp0uftp.apps.googleusercontent.com",
+          "client_id": "935138601142-r0a96a3ia93gl518o7718ge2vjtcnmcu.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "935138601142-84feg3og7haculm6numh628d2b51cqe0.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "fr.esgi.alloeatsclientapp",
@@ -23,13 +27,13 @@
           }
         },
         {
-          "client_id": "202736207918-k06pcgsbrbige0bfhamlvb2k28lt8r5s.apps.googleusercontent.com",
+          "client_id": "935138601142-acoj5vo4m5d3la88ooh4j2mg0oahc7v2.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyD5rEsDILNryR8EVPxHqb-tyM6bxxYGi8k"
+          "current_key": "AIzaSyBwMpX0-_aRaQXEsXeXWAV9RJP7XeNaIcc"
         }
       ],
       "services": {
@@ -40,7 +44,7 @@
           "status": 2,
           "other_platform_oauth_client": [
             {
-              "client_id": "202736207918-k06pcgsbrbige0bfhamlvb2k28lt8r5s.apps.googleusercontent.com",
+              "client_id": "935138601142-r0a96a3ia93gl518o7718ge2vjtcnmcu.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

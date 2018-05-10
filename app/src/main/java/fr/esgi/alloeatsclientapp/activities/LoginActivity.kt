@@ -22,13 +22,11 @@ import android.widget.TextView
 
 import android.Manifest.permission.READ_CONTACTS
 import android.content.Intent
+import android.content.pm.PackageInfo
 import android.util.Log
 import android.view.WindowManager
 import android.widget.Button
 import com.facebook.*
-import com.facebook.login.LoginManager
-import com.facebook.login.LoginResult
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.inaka.killertask.KillerTask
 import fr.esgi.alloeatsclientapp.R
 import fr.esgi.alloeatsclientapp.api.user.SocialUserAuth
@@ -36,6 +34,7 @@ import fr.esgi.alloeatsclientapp.api.user.UserAuth
 import fr.esgi.alloeatsclientapp.utils.Check
 
 import kotlinx.android.synthetic.main.activity_login.*
+import java.security.MessageDigest
 import java.util.*
 
 
@@ -274,30 +273,6 @@ class LoginActivity : AppCompatActivity(), LoaderCallbacks<Cursor> {
         btnLoginTwitter.setOnClickListener({
             SocialUserAuth.connectTwitter(applicationContext)
         })
-
-        /*btnLoginFacebook.setOnClickListener({
-            callbackManager = CallbackManager.Factory.create()
-
-            LoginManager.getInstance().logInWithReadPermissions(
-                    this, Arrays.asList("public_profile", "email"))
-
-            LoginManager.getInstance().registerCallback(callbackManager,
-                object : FacebookCallback<LoginResult> {
-                    override fun onSuccess(loginResult : LoginResult?) {
-                        Log.d("LoginActivity",
-                                "Facebook token: " + loginResult?.accessToken?.token)
-                        startActivity(Intent(applicationContext, MainActivity::class.java))
-                    }
-
-                    override fun onCancel() {
-                        Log.d("LoginActivity", "Facebook onCancel.")
-                    }
-
-                    override fun onError(exception : FacebookException?) {
-                        Log.d("LoginActivity", "Facebook onError.")
-                    }
-                })
-        })*/
     }
 
     object ProfileQuery {

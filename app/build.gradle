@@ -8,7 +8,7 @@ android {
     compileSdkVersion 26
     defaultConfig {
         applicationId "fr.esgi.alloeatsclientapp"
-        minSdkVersion 25
+        minSdkVersion 24
         targetSdkVersion 26
         versionCode 1
         versionName "1.0"
@@ -44,13 +44,13 @@ repositories {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     //noinspection GradleCompatible
     implementation 'com.android.support:appcompat-v7:26.1.0'
     implementation 'com.android.support:design:26.1.0'
-    //implementation 'com.facebook.android:facebook-login:4.31.0'
     implementation 'com.android.support:support-v4:26.1.0'
     implementation 'com.android.support.constraint:constraint-layout:1.1.0'
+    implementation 'com.google.android.gms:play-services-maps:15.0.1'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
@@ -60,21 +60,23 @@ dependencies {
     implementation 'com.jaychang:simpleauth-facebook:2.0.1'
     implementation 'com.jaychang:simpleauth-google:2.0.1'
     implementation 'com.jaychang:simpleauth-twitter:2.0.1'
+    implementation 'com.google.android.gms:play-services-auth:15.0.1'
     implementation 'com.google.firebase:firebase-core:15.0.2'
     implementation 'com.google.firebase:firebase-database:15.0.1'
     implementation 'com.google.firebase:firebase-auth:15.1.0'
     implementation 'com.google.firebase:firebase-config:15.0.2'
     implementation 'com.firebaseui:firebase-ui-auth:3.1.0'
-    implementation 'com.google.android.gms:play-services-auth:15.0.1'
     implementation 'com.google.api-client:google-api-client:1.23.0'
     implementation 'com.google.api-client:google-api-client-android:1.23.0'
     implementation 'com.google.apis:google-api-services-people:v1-rev139-1.22.0'
     implementation 'com.google.http-client:google-http-client-android:1.23.0'
+    implementation 'com.google.android.gms:play-services-location:15.0.1'
+    implementation 'com.google.android.gms:play-services-places:15.0.1'
 }
 
 android.defaultConfig.manifestPlaceholders = [
         facebookAppId        : "166817300640477",
-        googleWebClientId    : "AIzaSyA5-msWrY9MenNGx_BzNQs2kBsr-r0TOtI",
+        googleWebClientId    : "935138601142-r0a96a3ia93gl518o7718ge2vjtcnmcu.apps.googleusercontent.com",
         twitterConsumerKey   : "crfMRqsqhgw3A4rDdC90ZERtw",
         twitterConsumerSecret: "aBNNbEuyeT1mu94n3mZ6riSih9FoROU93wNnuM6wHKWd03aB06"
 ]

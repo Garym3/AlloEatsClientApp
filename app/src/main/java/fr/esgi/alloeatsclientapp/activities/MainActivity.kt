@@ -39,6 +39,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         toggle.syncState()
 
         nav_view.setNavigationItemSelectedListener(this)
+        nav_view.itemIconTintList = null
 
         val isStandardAccount = Global.CurrentUser.user != null
 
@@ -49,12 +50,15 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         val socialUser: SocialUser? =
                 if (!isStandardAccount)
-                    intent.getParcelableExtra<SocialUser>("socialUser") as SocialUser
+                    intent.getParcelableExtra("socialUser") as SocialUser
                 else null
 
         usernameTextView.text =
-                if(isStandardAccount) Global.CurrentUser.user?.username
-                else socialUser?.username
+                when {
+                    isStandardAccount -> Global.CurrentUser.user?.username
+                    socialUser?.username != null -> socialUser.username
+                    else -> socialUser?.fullName
+                }
 
         emailTextView.text =
                 if(isStandardAccount) Global.CurrentUser.user?.mailAddress
@@ -93,7 +97,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.nav_maps -> {
-                //startActivity(Intent(applicationContext, GoogleMapsActivity::class.java))
+                startActivity(Intent(applicationContext, MapsActivity::class.java))
             }
             R.id.nav_favorites -> {
                 //startActivity(Intent(applicationContext, FavoritesActivity::class.java))
@@ -111,31 +115,19 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun disconnectUser(){
-        /*// Facebook Logout
-                if (AccessToken.getCurrentAccessToken() != null) {
-                    GraphRequest(AccessToken.getCurrentAccessToken(), "/me/permissions/",
-                            null, HttpMethod.DELETE, GraphRequest.Callback {
-                        AccessToken.setCurrentAccessToken(null)
-                        LoginManager.getInstance().logOut()
-
-                        finish()
-                    }).executeAsync()
-                } else {
-                    // Standard logout
-                    Global.CurrentUser.user = null
-                    finish()
-                }*/
-
         if(Global.CurrentUser.user != null) {
             Global.CurrentUser.user = null
         } else {
             try {
                 SocialUserAuth.disconnect(SocialUserAuth.FACEBOOK)
+                SocialUserAuth.disconnect(SocialUserAuth.GOOGLE)
+                SocialUserAuth.disconnect(SocialUserAuth.TWITTER)
             } catch (e: Exception){
                 try {
+                    SocialUserAuth.disconnect(SocialUserAuth.GOOGLE)
                     SocialUserAuth.disconnect(SocialUserAuth.TWITTER)
                 } catch (e: Exception){
-                    SocialUserAuth.disconnect(SocialUserAuth.GOOGLE)
+                    SocialUserAuth.disconnect(SocialUserAuth.TWITTER)
                 }
             }
         }
