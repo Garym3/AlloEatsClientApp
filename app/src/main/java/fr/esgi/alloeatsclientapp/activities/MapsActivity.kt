@@ -130,7 +130,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener, 
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
 
-        // Enable current location
+        // Enable current coordinates
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this,
                         android.Manifest.permission.ACCESS_COARSE_LOCATION)
@@ -185,7 +185,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener, 
         val googlePlacesUrl =
                 StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?")
 
-        googlePlacesUrl.append("location=").append(latitude).append(",").append(longitude)
+        googlePlacesUrl.append("coordinates=").append(latitude).append(",").append(longitude)
         googlePlacesUrl.append("&radius=").append(PROXIMITY_RADIUS)
         googlePlacesUrl.append("&types=").append(type)
         googlePlacesUrl.append("&sensor=true")

@@ -9,19 +9,25 @@ import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.ListView
 import android.widget.TextView
-import com.facebook.AccessToken
-import com.facebook.GraphRequest
-import com.facebook.HttpMethod
-import com.facebook.login.LoginManager
 import com.jaychang.sa.SocialUser
 import fr.esgi.alloeatsclientapp.R
 import fr.esgi.alloeatsclientapp.api.user.SocialUserAuth
+import fr.esgi.alloeatsclientapp.models.Restaurant
 import fr.esgi.alloeatsclientapp.utils.Global
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
+import fr.esgi.alloeatsclientapp.utils.CustomAdapter
+import android.widget.AdapterView
+import com.google.android.gms.maps.model.LatLng
+
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
+
+    private var restaurants: ArrayList<Restaurant>? = null
+    private var listView: ListView? = null
+    private var adapter: CustomAdapter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,21 +54,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val usernameTextView = hView.findViewById<TextView>(R.id.username_textview)
         val emailTextView = hView.findViewById<TextView>(R.id.email_textview)
 
-        val socialUser: SocialUser? =
-                if (!isStandardAccount)
-                    intent.getParcelableExtra("socialUser") as SocialUser
-                else null
-
-        usernameTextView.text =
-                when {
-                    isStandardAccount -> Global.CurrentUser.user?.username
-                    socialUser?.username != null -> socialUser.username
-                    else -> socialUser?.fullName
-                }
-
-        emailTextView.text =
-                if(isStandardAccount) Global.CurrentUser.user?.mailAddress
-                else socialUser?.email
+        setDisplayedValues(isStandardAccount, usernameTextView, emailTextView)
     }
 
     override fun onDestroy() {
@@ -112,6 +104,44 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         drawer_layout.closeDrawer(GravityCompat.START)
         return true
+    }
+
+    private fun setDisplayedValues(isStandardAccount: Boolean, usernameTextView: TextView, emailTextView: TextView) {
+        val socialUser: SocialUser? =
+                if (!isStandardAccount)
+                    intent.getParcelableExtra("socialUser") as SocialUser
+                else null
+
+        usernameTextView.text =
+                when {
+                    isStandardAccount -> Global.CurrentUser.user?.username
+                    socialUser?.username != null -> socialUser.username
+                    else -> socialUser?.fullName
+                }
+
+        emailTextView.text =
+                if (isStandardAccount) Global.CurrentUser.user?.mailAddress
+                else socialUser?.email
+    }
+
+    private fun setNearbyRestaurants(){
+        listView = findViewById(R.id.restaurantsList)
+        val test: List<String>? = null
+
+        restaurants?.add(Restaurant("id", "Marly Pizza", "photo", test!!, true, 3, "address", LatLng(10.0, 10.0)))
+
+        adapter = CustomAdapter(restaurants!!, applicationContext)
+
+        listView!!.adapter = adapter
+        listView!!.onItemClickListener = AdapterView.OnItemClickListener {
+            _, _, position, _ ->
+
+            val restaurant = restaurants?.get(position)
+
+            //TODO: Bring to RestaurantMenuActivity
+
+
+        }
     }
 
     private fun disconnectUser(){
