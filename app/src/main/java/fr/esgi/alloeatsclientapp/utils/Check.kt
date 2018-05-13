@@ -9,7 +9,7 @@ import java.util.regex.Pattern
 class Check {
     companion object {
         fun emailStructure(email : String): Boolean {
-            return Pattern.compile(Global.emailPattern).matcher(email).matches()
+            return Pattern.compile(Global.EMAILPATTERN).matcher(email).matches()
         }
 
         fun passwordStructure(password : String): Boolean {
@@ -18,11 +18,11 @@ class Check {
         }
 
         private fun passwordLength(password : String): Boolean {
-            return password.length >= Global.passwordMinLength
+            return password.length >= Global.PASSWORDMINLENGTH
         }
 
         private fun passwordRequiredChars(password : String): Boolean {
-            val pattern = Regex(Global.passwordRequiredChars)
+            val pattern = Regex(Global.PASSWORDREQUIREDCHARS)
             return password.matches(pattern)
         }
     }
