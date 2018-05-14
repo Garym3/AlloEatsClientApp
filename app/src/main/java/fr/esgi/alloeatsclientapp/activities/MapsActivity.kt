@@ -185,7 +185,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener, 
         val googlePlacesUrl =
                 StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?")
 
-        googlePlacesUrl.append("coordinates=").append(latitude).append(",").append(longitude)
+        googlePlacesUrl.append("location=").append(latitude).append(",").append(longitude)
         googlePlacesUrl.append("&radius=").append(PROXIMITY_RADIUS)
         googlePlacesUrl.append("&types=").append(type)
         googlePlacesUrl.append("&sensor=true")

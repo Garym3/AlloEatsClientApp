@@ -23,7 +23,7 @@ class Global {
 
         // Key for nearby places JSON from Google
         const val GEOMETRY = "geometry"
-        const val LOCATION = "coordinates"
+        const val LOCATION = "location"
         const val LATITUDE = "lat"
         const val LONGITUDE = "lng"
         const val ICON = "icon"
@@ -31,7 +31,7 @@ class Global {
         const val NAME = "name"
         const val PLACE_ID = "place_id"
         const val REFERENCE = "reference"
-        const val VICINITY = "address"
+        const val VICINITY = "vicinity"
         const val PLACE_NAME = "place_name"
 
         const val GOOGLE_BROWSER_API_KEY = "AIzaSyByPm_M8iKQpDqteolcEYtz4YcfKDFZL_M"

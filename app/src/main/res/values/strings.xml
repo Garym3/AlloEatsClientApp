@@ -47,7 +47,7 @@
     <string name="action_settings">Settings</string>
     <string name="logout_button">Logout</string>
     <string name="title_activity_settings">Settings</string>
-    <string name="maps_item">Google Maps</string>
+    <string name="restaurant_finder_item">Restaurant Finder</string>
     <string name="favorites_item">Favorites</string>
     <string name="settings_item">Settings</string>
     <string name="logout_item">Logout</string>

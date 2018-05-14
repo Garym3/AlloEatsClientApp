@@ -73,10 +73,11 @@ dependencies {
     implementation 'com.google.api-client:google-api-client-android:1.23.0'
     implementation 'com.google.apis:google-api-services-people:v1-rev139-1.22.0'
     implementation 'com.google.http-client:google-http-client-android:1.23.0'
-    implementation 'com.google.android.gms:play-services-coordinates:15.0.1'
+    implementation 'com.google.android.gms:play-services-location:15.0.1'
     implementation 'com.google.android.gms:play-services-maps:15.0.1'
     implementation 'com.google.android.gms:play-services-auth:15.0.1'
     implementation 'com.google.android.gms:play-services-places:15.0.1'
+    implementation 'com.paypal.sdk:paypal-android-sdk:2.16.0'
 }
 
 android.defaultConfig.manifestPlaceholders = [
