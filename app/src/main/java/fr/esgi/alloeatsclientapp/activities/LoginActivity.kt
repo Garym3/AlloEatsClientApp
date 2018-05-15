@@ -14,7 +14,6 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.ContactsContract
-import android.text.TextUtils
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.ArrayAdapter
@@ -22,7 +21,6 @@ import android.widget.TextView
 
 import android.Manifest.permission.READ_CONTACTS
 import android.content.Intent
-import android.content.pm.PackageInfo
 import android.util.Log
 import android.view.WindowManager
 import android.widget.Button
@@ -31,22 +29,22 @@ import com.inaka.killertask.KillerTask
 import fr.esgi.alloeatsclientapp.R
 import fr.esgi.alloeatsclientapp.api.user.SocialUserAuth
 import fr.esgi.alloeatsclientapp.api.user.UserAuth
-import fr.esgi.alloeatsclientapp.utils.Check
+import fr.esgi.alloeatsclientapp.business.LoginRepository
 
 import kotlinx.android.synthetic.main.activity_login.*
-import java.security.MessageDigest
 import java.util.*
 
 
-/**
- * A login screen that offers login via email/password.
- */
 class LoginActivity : AppCompatActivity(), LoaderCallbacks<Cursor> {
-    /**
-     * Keep track of the login task to ensure we can cancel it if requested.
-     */
-    private var userAuth : UserAuth? = UserAuth()
     private var callbackManager : CallbackManager? = null
+    private var loginRepository: LoginRepository? = null
+    private var userAuth : UserAuth? = UserAuth()
+
+    private var emailTextView: TextView? = null
+    private var passwordTextView: TextView? = null
+    private var loginFacebookButton: Button? = null
+    private var loginGoogleButton: Button? = null
+    private var loginTwitterButton: Button? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,13 +55,21 @@ class LoginActivity : AppCompatActivity(), LoaderCallbacks<Cursor> {
         // Hides keyboard on focus only
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN)
 
+        emailTextView = findViewById(R.id.email)
+        passwordTextView = findViewById(R.id.password)
+        loginFacebookButton = findViewById(R.id.facebook_login_button)
+        loginGoogleButton = findViewById(R.id.google_login_button)
+        loginTwitterButton = findViewById(R.id.twitter_login_button)
+
         handleConnection()
+
+        loginRepository = LoginRepository(this.applicationContext,
+                emailTextView, passwordTextView)
     }
 
     override fun onResume() {
         super.onResume()
-        email.text = null
-        password.text = null
+        loginRepository?.setCredentials(null, null)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -88,7 +94,7 @@ class LoginActivity : AppCompatActivity(), LoaderCallbacks<Cursor> {
             return true
         }
         if (shouldShowRequestPermissionRationale(READ_CONTACTS)) {
-            Snackbar.make(email, R.string.permission_rationale, Snackbar.LENGTH_INDEFINITE)
+            Snackbar.make(this.emailTextView!!, R.string.permission_rationale, Snackbar.LENGTH_INDEFINITE)
                     .setAction(android.R.string.ok,
                             { requestPermissions(arrayOf(READ_CONTACTS), REQUEST_READ_CONTACTS) })
         } else {
@@ -116,64 +122,23 @@ class LoginActivity : AppCompatActivity(), LoaderCallbacks<Cursor> {
      * errors are presented and no actual login attempt is made.
      */
     private fun attemptLogin() {
-        // Reset errors.
-        email.error = null
-        password.error = null
+        if(!loginRepository?.attemptLogin()!!) return
 
-        // Store values at the time of the login attempt.
-        val emailStr = email.text.toString()
-        val passwordStr = password.text.toString()
+        val emailStr: String = loginRepository?.getEmailValue()!!
+        val passwordStr: String = loginRepository?.getPasswordValue()!!
 
-        var cancel = false
-        var focusView: View? = null
-
-        // Check for a valid password, if the user entered one.
-        // Check for a valid email address.
-        if (TextUtils.isEmpty(passwordStr)) {
-            password.error = getString(R.string.error_field_required)
-            focusView = password
-            cancel = true
-        } else if (!isPasswordValid(passwordStr)) {
-            password.error = getString(R.string.error_invalid_password)
-            focusView = password
-            cancel = true
-        }
-
-        // Check for a valid email address.
-        if (TextUtils.isEmpty(emailStr)) {
-            email.error = getString(R.string.error_field_required)
-            focusView = email
-            cancel = true
-        } else if (!isEmailValid(emailStr)) {
-            email.error = getString(R.string.error_invalid_email)
-            focusView = email
-            cancel = true
-        }
-
-        if (cancel) {
-            focusView?.requestFocus()
-        } else {
-            showProgress(true)
-            KillerTask(
-                    {
-                        userAuth?.checkAccount(this.applicationContext, emailStr, passwordStr)
-                    },
-                    {
-                        showProgress(false)
-                    },
-                    {
-                        Log.e("onErrorResponse", it?.message)
-                        showProgress(false)
-                    }).go()
-        }
-    }
-
-    private fun isEmailValid(email: String): Boolean {
-        return Check.emailStructure(email)
-    }
-
-    private fun isPasswordValid(password: String): Boolean {
-        return Check.passwordStructure(password)
+        showProgress(true)
+        KillerTask(
+                {
+                    userAuth?.checkAccount(this.applicationContext, emailStr, passwordStr)
+                },
+                {
+                    showProgress(false)
+                },
+                {
+                    Log.e("onErrorResponse", it?.message)
+                    showProgress(false)
+                }).go()
     }
 
     /**
@@ -184,13 +149,13 @@ class LoginActivity : AppCompatActivity(), LoaderCallbacks<Cursor> {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
             val shortAnimTime = resources.getInteger(android.R.integer.config_shortAnimTime).toLong()
 
-            login_form.visibility = if (show) View.GONE else View.VISIBLE
-            login_form.animate()
+            credentials_view.visibility = if (show) View.GONE else View.VISIBLE
+            credentials_view.animate()
                     .setDuration(shortAnimTime)
                     .alpha((if (show) 0 else 1).toFloat())
                     .setListener(object : AnimatorListenerAdapter() {
                         override fun onAnimationEnd(animation: Animator) {
-                            login_form.visibility = if (show) View.GONE else View.VISIBLE
+                            credentials_view.visibility = if (show) View.GONE else View.VISIBLE
                         }
                     })
 
@@ -205,7 +170,7 @@ class LoginActivity : AppCompatActivity(), LoaderCallbacks<Cursor> {
                     })
         } else {
             login_progress.visibility = if (show) View.VISIBLE else View.GONE
-            login_form.visibility = if (show) View.GONE else View.VISIBLE
+            credentials_view.visibility = if (show) View.GONE else View.VISIBLE
         }
     }
 
@@ -216,8 +181,8 @@ class LoginActivity : AppCompatActivity(), LoaderCallbacks<Cursor> {
                         ContactsContract.Contacts.Data.CONTENT_DIRECTORY), ProfileQuery.PROJECTION,
 
                 // Select only email addresses.
-                ContactsContract.Contacts.Data.MIMETYPE + " = ?", arrayOf(ContactsContract.CommonDataKinds.Email
-                .CONTENT_ITEM_TYPE),
+                ContactsContract.Contacts.Data.MIMETYPE + " = ?",
+                arrayOf(ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE),
 
                 // Show primary email addresses first. Note that there won't be
                 // a primary email address if the user hasn't specified one.
@@ -258,19 +223,15 @@ class LoginActivity : AppCompatActivity(), LoaderCallbacks<Cursor> {
             false
         })
 
-        val btnLoginFacebook = findViewById<Button>(R.id.facebook_login_button)
-        val btnLoginGoogle = findViewById<Button>(R.id.google_login_button)
-        val btnLoginTwitter = findViewById<Button>(R.id.twitter_login_button)
-
-        btnLoginFacebook.setOnClickListener({
+        loginFacebookButton?.setOnClickListener({
             SocialUserAuth.connectFacebook(applicationContext)
         })
 
-        btnLoginGoogle.setOnClickListener({
+        loginGoogleButton?.setOnClickListener({
             SocialUserAuth.connectGoogle(applicationContext)
         })
 
-        btnLoginTwitter.setOnClickListener({
+        loginTwitterButton?.setOnClickListener({
             SocialUserAuth.connectTwitter(applicationContext)
         })
     }
@@ -279,8 +240,7 @@ class LoginActivity : AppCompatActivity(), LoaderCallbacks<Cursor> {
         val PROJECTION = arrayOf(
                 ContactsContract.CommonDataKinds.Email.ADDRESS,
                 ContactsContract.CommonDataKinds.Email.IS_PRIMARY)
-        val ADDRESS = 0
-        val IS_PRIMARY = 1
+        const val ADDRESS = 0
     }
 
     companion object {
@@ -288,6 +248,6 @@ class LoginActivity : AppCompatActivity(), LoaderCallbacks<Cursor> {
         /**
          * Id to identity READ_CONTACTS permission request.
          */
-        private val REQUEST_READ_CONTACTS = 0
+        private const val REQUEST_READ_CONTACTS = 0
     }
 }

@@ -45,12 +45,12 @@
         android:textStyle="bold" />
 
     <ScrollView
-        android:id="@+id/login_form"
+        android:id="@+id/credentials_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <LinearLayout
-            android:id="@+id/email_login_form"
+            android:id="@+id/credentials_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
