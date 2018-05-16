@@ -142,15 +142,30 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun setRestaurantListView(){
-        val resto1 = Restaurant("1", "Resto1", "",
+        val resto1 = Restaurant("1", "resto1", "",
                 true, 5, "2 impasse des rues", LatLng(10.0, 20.0))
 
-        val resto2 = Restaurant("2", "Resto2", "",
+        val resto2 = Restaurant("2", "resto2", "",
+                false, 4, "2 impasse des impasses", LatLng(15.0, 20.0))
+
+        val resto3 = Restaurant("3", "resto3", "",
+                false, 4, "2 impasse des impasses", LatLng(15.0, 20.0))
+
+        val resto4 = Restaurant("4", "resto4", "",
+                false, 4, "2 impasse des impasses", LatLng(15.0, 20.0))
+
+        val resto5 = Restaurant("5", "resto5", "",
+                false, 4, "2 impasse des impasses", LatLng(15.0, 20.0))
+
+        val resto6 = Restaurant("6", "resto6", "",
+                false, 4, "2 impasse des impasses", LatLng(15.0, 20.0))
+
+        val resto7 = Restaurant("7", "resto7", "",
                 false, 4, "2 impasse des impasses", LatLng(15.0, 20.0))
 
         //val restos: ArrayList<Restaurant> = arrayListOf(resto1, resto2)
 
-        restaurantAdapter = CustomAdapter(applicationContext, arrayListOf(resto1, resto2))
+        restaurantAdapter = CustomAdapter(applicationContext, arrayListOf(resto1, resto2, resto3, resto4, resto5, resto6, resto7))
         //restaurantListView = findViewById(R.id.restaurantsList)
         restaurantListView.adapter = restaurantAdapter
     }
