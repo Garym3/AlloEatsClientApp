@@ -1,5 +1,6 @@
 package fr.esgi.alloeatsclientapp.activities
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.Snackbar
@@ -9,8 +10,8 @@ import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.ListView
-import android.widget.TextView
+import android.widget.*
+import android.widget.Toast.LENGTH_SHORT
 import com.jaychang.sa.SocialUser
 import fr.esgi.alloeatsclientapp.R
 import fr.esgi.alloeatsclientapp.api.user.SocialUserAuth
@@ -19,19 +20,33 @@ import fr.esgi.alloeatsclientapp.utils.Global
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import fr.esgi.alloeatsclientapp.utils.CustomAdapter
-import android.widget.AdapterView
+import butterknife.BindView
+import butterknife.ButterKnife
+import butterknife.OnItemClick
 import com.google.android.gms.maps.model.LatLng
 
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
     private var restaurants: ArrayList<Restaurant>? = null
-    private var listView: ListView? = null
-    private var adapter: CustomAdapter? = null
+    private lateinit var restaurantAdapter: CustomAdapter
 
+    @BindView(R.id.restaurantsList)
+    lateinit var restaurantListView: ListView
+
+    @OnItemClick(R.id.restaurantsList)
+    internal fun onItemClick(position: Int) {
+        Toast.makeText(this, "You clicked: " + restaurantAdapter.getItem(position),
+                LENGTH_SHORT).show()
+    }
+
+
+    @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        ButterKnife.setDebug(true)
+        ButterKnife.bind(this)
         setSupportActionBar(toolbar)
 
         fab.setOnClickListener { view ->
@@ -50,11 +65,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val isStandardAccount = Global.CurrentUser.user != null
 
         val navigationView = findViewById<NavigationView>(R.id.nav_view)
-        val hView = navigationView.getHeaderView(0)
-        val usernameTextView = hView.findViewById<TextView>(R.id.username_textview)
-        val emailTextView = hView.findViewById<TextView>(R.id.email_textview)
+        val headerView = navigationView.getHeaderView(0)
+        val usernameTextView = headerView.findViewById<TextView>(R.id.username_textview)
+        val emailTextView = headerView.findViewById<TextView>(R.id.email_textview)
 
-        setDisplayedValues(isStandardAccount, usernameTextView, emailTextView)
+        setDisplayedCredentials(isStandardAccount, usernameTextView, emailTextView)
+
+        setRestaurantListView()
     }
 
     override fun onDestroy() {
@@ -106,7 +123,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return true
     }
 
-    private fun setDisplayedValues(isStandardAccount: Boolean, usernameTextView: TextView, emailTextView: TextView) {
+    private fun setDisplayedCredentials(isStandardAccount: Boolean, usernameTextView: TextView, emailTextView: TextView) {
         val socialUser: SocialUser? =
                 if (!isStandardAccount)
                     intent.getParcelableExtra("socialUser") as SocialUser
@@ -124,16 +141,30 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 else socialUser?.email
     }
 
+    private fun setRestaurantListView(){
+        val resto1 = Restaurant("1", "Resto1", "",
+                true, 5, "2 impasse des rues", LatLng(10.0, 20.0))
+
+        val resto2 = Restaurant("2", "Resto2", "",
+                false, 4, "2 impasse des impasses", LatLng(15.0, 20.0))
+
+        //val restos: ArrayList<Restaurant> = arrayListOf(resto1, resto2)
+
+        restaurantAdapter = CustomAdapter(applicationContext, arrayListOf(resto1, resto2))
+        //restaurantListView = findViewById(R.id.restaurantsList)
+        restaurantListView.adapter = restaurantAdapter
+    }
+
     private fun setNearbyRestaurants(){
-        listView = findViewById(R.id.restaurantsList)
-        val test: List<String>? = null
+        restaurantListView = findViewById(R.id.restaurantsList)
 
-        restaurants?.add(Restaurant("id", "Marly Pizza", "photo", test!!, true, 3, "address", LatLng(10.0, 10.0)))
+        restaurants?.add(Restaurant("id", "Marly Pizza", "photo",
+                true, 3, "address", LatLng(10.0, 10.0)))
 
-        adapter = CustomAdapter(restaurants!!, applicationContext)
+        restaurantAdapter = CustomAdapter(applicationContext, restaurants!!)
 
-        listView!!.adapter = adapter
-        listView!!.onItemClickListener = AdapterView.OnItemClickListener {
+        restaurantListView.adapter = restaurantAdapter
+        restaurantListView.onItemClickListener = AdapterView.OnItemClickListener {
             _, _, position, _ ->
 
             val restaurant = restaurants?.get(position)

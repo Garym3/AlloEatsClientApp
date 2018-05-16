@@ -131,4 +131,9 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="restaurant_imageView_description">Main photo of the restaurant</string>
+    <string name="restaurant_address_name">Address:</string>
+    <string name="restaurant_rating_name">Rating:</string>
+    <string name="restaurant_is_open_name">Is Open:</string>
+    <string name="restaurant_name_name">Name:</string>
 </resources>

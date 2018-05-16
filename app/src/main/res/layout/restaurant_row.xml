@@ -9,12 +9,12 @@
 
     <TextView
         android:id="@+id/name"
-        android:layout_width="wrap_content"
+        android:layout_width="265dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:text="Name"
+        android:text="@string/restaurant_name_name"
         android:textAlignment="textStart"
         android:textAllCaps="false"
         android:textAppearance="?android:attr/textAppearanceSmall"
@@ -27,13 +27,13 @@
 
     <TextView
         android:id="@+id/isOpen"
-        android:layout_width="wrap_content"
+        android:layout_width="265dp"
         android:layout_height="wrap_content"
         android:layout_below="@+id/name"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:text="IsOpen"
+        android:text="@string/restaurant_is_open_name"
         android:textAlignment="textStart"
         android:textAllCaps="false"
         android:textColor="@android:color/black"
@@ -44,14 +44,14 @@
 
     <TextView
         android:id="@+id/rating"
-        android:layout_width="wrap_content"
+        android:layout_width="265dp"
         android:layout_height="wrap_content"
         android:layout_alignStart="@+id/name"
         android:layout_centerVertical="true"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:text="Rating"
+        android:text="@string/restaurant_rating_name"
         android:textAlignment="textStart"
         android:textAllCaps="false"
         android:textColor="@android:color/black"
@@ -62,12 +62,12 @@
 
     <TextView
         android:id="@+id/address"
-        android:layout_width="54dp"
+        android:layout_width="265dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="4dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:text="Address"
+        android:text="@string/restaurant_address_name"
         android:textAlignment="textStart"
         android:textAllCaps="false"
         android:textColor="@android:color/black"
@@ -84,7 +84,7 @@
         android:layout_alignParentTop="true"
         android:layout_marginBottom="16dp"
         android:layout_marginEnd="4dp"
-        android:contentDescription="Main photo of the restaurant"
+        android:contentDescription="@string/restaurant_imageView_description"
         android:src="@drawable/default_restaurant_icon"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
