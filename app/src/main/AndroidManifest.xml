@@ -62,7 +62,7 @@
         <activity
             android:name=".activities.MapsActivity"
             android:label="@string/title_activity_maps" />
-        <activity android:name=".activities.CheckoutActivity"></activity>
+        <activity android:name=".activities.PaypalCheckoutActivity" />
     </application>
 
 </manifest>

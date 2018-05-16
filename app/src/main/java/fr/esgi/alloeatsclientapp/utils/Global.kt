@@ -1,6 +1,9 @@
 package fr.esgi.alloeatsclientapp.utils
 
 import fr.esgi.alloeatsclientapp.models.User
+import com.paypal.android.sdk.payments.PayPalConfiguration
+
+
 
 
 class Global {
@@ -41,8 +44,19 @@ class Global {
         // The minimum distance to change Updates in meters
         const val MIN_DISTANCE_CHANGE_FOR_UPDATES: Float = 10f // meters
 
-        // The minimum time between updates in milliseconds
+        // The minimum time between updates in minutes
         const val MIN_TIME_BW_UPDATES = (1000 * 60 * 1).toLong() // minutes
+
+        private const val paypalClientId =
+                "AabnpXbIPZviyvDhsA2ziJn8-Eq1Yupbyn3__73I7rZf9lX24fK2bMAed5Ix1ndFA-uxvxluPRxKbOhp"
+
+        // Start with mock environment.  When ready, switch to sandbox (ENVIRONMENT_SANDBOX)
+        // or live (ENVIRONMENT_PRODUCTION)
+        private const val paypalEnvironment = PayPalConfiguration.ENVIRONMENT_NO_NETWORK
+
+                val paypalConfig = PayPalConfiguration()
+                .environment(paypalEnvironment)
+                .clientId(paypalClientId)
     }
 
     object CurrentUser {
