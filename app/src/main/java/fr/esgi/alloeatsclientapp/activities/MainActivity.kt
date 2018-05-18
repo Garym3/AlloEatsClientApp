@@ -1,13 +1,19 @@
 package fr.esgi.alloeatsclientapp.activities
 
+import android.Manifest
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationManager
 import android.os.Bundle
+import android.provider.Settings
 import android.support.design.widget.NavigationView
+import android.support.multidex.MultiDex
+import android.support.v4.app.ActivityCompat
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
+import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.Menu
@@ -20,7 +26,7 @@ import fr.esgi.alloeatsclientapp.api.user.SocialUserAuth
 import fr.esgi.alloeatsclientapp.utils.Global
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
-import fr.esgi.alloeatsclientapp.business.CustomAdapter
+import fr.esgi.alloeatsclientapp.business.RestaurantAdapter
 import butterknife.BindView
 import butterknife.ButterKnife
 import butterknife.OnItemClick
@@ -29,21 +35,33 @@ import com.android.volley.RequestQueue
 import com.android.volley.Response
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
+import com.google.android.gms.common.ConnectionResult
+import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.location.*
-import com.google.android.gms.tasks.Task
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonParser
-import fr.esgi.alloeatsclientapp.business.LocationService
 import fr.esgi.alloeatsclientapp.business.NearbyPlacesBuilder
 import fr.esgi.alloeatsclientapp.models.nearbySearch.Restaurant
 import fr.esgi.alloeatsclientapp.utils.Google
 import org.json.JSONObject
+import java.util.*
 
 
-class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
-    private lateinit var restaurantAdapter: CustomAdapter
-    private lateinit var locationCallback: LocationCallback
-    private val locationRequest: LocationRequest = LocationRequest.create()
+class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener,
+        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
+        com.google.android.gms.location.LocationListener{
+    
+    private val tag = "MainActivity"
+    private lateinit var mGoogleApiClient: GoogleApiClient
+    private var mLocationManager: LocationManager? = null
+    private lateinit var mLocation: Location
+    private var mLocationRequest: LocationRequest? = null
+    private var mLocationCallback: LocationCallback? = null
+    private val updateInterval = (2 * 1000).toLong()
+    private val fastestInterval: Long = 2000
+    private var mCurrentLocation: Location? = null
+
+    private lateinit var restaurantAdapter: RestaurantAdapter
 
     @BindView(R.id.restaurantsList)
     lateinit var restaurantListView: ListView
@@ -63,47 +81,27 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         setSupportActionBar(toolbar)
         setContentView(R.layout.activity_maps)
 
-        /*locationCallback = object : LocationCallback() {
-            override fun onLocationResult(locationResult: LocationResult?) {
-                locationResult ?: return
-                for (location in locationResult.locations){
-                    // Update UI with location data
-                    // ...
-                }
-            }
-        }
+        createLocationCallback()
 
+        MultiDex.install(this)
 
+        mGoogleApiClient = GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build()
 
-        locationRequest.apply { interval = 10000
-            fastestInterval = 5000
-            priority = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY
-        }
-
-        val builder = LocationSettingsRequest.Builder().addLocationRequest(locationRequest)
-        val client: SettingsClient = LocationServices.getSettingsClient(this)
-        val task: Task<LocationSettingsResponse> = client.checkLocationSettings(builder.build())
-        task.addOnSuccessListener {
-
-        }
-
-        val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0f, this)
-        locationManager.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER, 0, 0f, LocationListener{
-            override fun onLocationChanged(location: Location) {
-                  Log.i("MainActivity", "Last Known Location :" + location.latitude + "," + location.longitude)
-            }
-        })*/
-        startService(Intent(applicationContext, LocationService::class.java))
-
-        //getNearbyRestaurants()
+        mLocationManager = this.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        checkLocation()
+        getNearbyRestaurants(mCurrentLocation!!.latitude, mCurrentLocation!!.longitude)
 
         goToTopButton.setOnClickListener { _ ->
             restaurantAdapter.notifyDataSetChanged()
         }
 
         val toggle = ActionBarDrawerToggle(
-                this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
+                this, drawer_layout, toolbar, 
+                R.string.navigation_drawer_open, R.string.navigation_drawer_close)
         drawer_layout.addDrawerListener(toggle)
         toggle.syncState()
 
@@ -120,9 +118,15 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         setDisplayedCredentials(isStandardAccount, usernameTextView, emailTextView)
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        stopService(Intent(applicationContext, LocationService::class.java))
+    override fun onStart() {
+        super.onStart()
+        mGoogleApiClient.connect()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        if (mGoogleApiClient.isConnected) mGoogleApiClient.disconnect()
+        //TODO: Remettre dans le onDestroy si bug
         disconnectUser()
     }
 
@@ -132,26 +136,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         } else {
             super.onBackPressed()
         }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        //if (requestingLocationUpdates) startLocationUpdates()
-    }
-
-    override fun onPause() {
-        super.onPause()
-        stopLocationUpdates()
-    }
-
-    private fun stopLocationUpdates() {
-        //fusedLocationClient.removeLocationUpdates(locationCallback)
-    }
-
-    private fun startLocationUpdates() {
-        /*fusedLocationClient.requestLocationUpdates(locationRequest,
-                locationCallback,
-                null /* Looper */)*/
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -223,26 +207,129 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         val request = JsonObjectRequest(Request.Method.GET, googlePlacesUrl.toString(), null,
                 Response.Listener<JSONObject> { response ->
-                    Log.i("MainActivity", "onResponse: Result= " + response.toString())
+                    Log.i(tag, "onResponse: Result= " + response.toString())
                     val restaurants: ArrayList<Restaurant> = ArrayList()
                     val gson = GsonBuilder().serializeNulls().create()
                     val npBuilder = gson.fromJson(JsonParser().parse(response.toString()), NearbyPlacesBuilder::class.java)
 
                     if(!npBuilder.status.equals("OK")) return@Listener
 
+                    restaurants.clear()
                     restaurants.addAll(npBuilder.results!!)
 
-                    restaurantAdapter = CustomAdapter(applicationContext, restaurants)
+                    restaurantAdapter = RestaurantAdapter(applicationContext, restaurants)
                     restaurantListView.adapter = restaurantAdapter
                 },
                 Response.ErrorListener { error ->
-                    Log.e("MainActivity", "onErrorResponse: Error= $error")
-                    Log.e("MainActivity", "onErrorResponse: Error= " + error?.message)
+                    Log.e(tag, "onErrorResponse: Error= $error")
+                    Log.e(tag, "onErrorResponse: Error= " + error?.message)
                 }
         )
 
         queue.add(request)
     }
+
+    ///// GPS LOCATION /////
+
+    override fun onConnectionSuspended(p0: Int) {
+
+        Log.i(tag, "Connection Suspended")
+        mGoogleApiClient.connect()
+    }
+
+    override fun onConnectionFailed(connectionResult: ConnectionResult) {
+        Log.i(tag, "Connection failed. Error: " + connectionResult.errorCode)
+    }
+
+    override fun onLocationChanged(location: Location) {
+        val msg = "Updated Location: Latitude " + location.longitude + location.longitude
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onConnected(bundle: Bundle?) {
+
+        if (ActivityCompat.checkSelfPermission(this,
+                        Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(
+                        this, Manifest.permission.ACCESS_COARSE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            return
+        }
+
+        startLocationUpdates()
+
+        val fusedLocationProviderClient :
+                FusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
+
+        fusedLocationProviderClient.lastLocation
+                .addOnSuccessListener(this, { location ->
+                    // Got last known location. In some rare situations this can be null.
+                    if (location != null) {
+                        mLocation = location
+                    }
+                })
+    }
+
+    /**
+     * Creates a callback for receiving location events.
+     */
+    private fun createLocationCallback() {
+        mLocationCallback = object : LocationCallback() {
+            override fun onLocationResult(locationResult: LocationResult?) {
+                super.onLocationResult(locationResult)
+                mCurrentLocation = locationResult!!.lastLocation
+            }
+        }
+    }
+
+    private fun checkLocation(): Boolean {
+        if(!isLocationEnabled())
+            showAlert()
+        return isLocationEnabled()
+    }
+
+    private fun isLocationEnabled(): Boolean {
+        mLocationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        return mLocationManager!!.isProviderEnabled(LocationManager.GPS_PROVIDER)
+                || mLocationManager!!.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
+    }
+
+    private fun showAlert() {
+        val dialog = AlertDialog.Builder(this)
+        dialog.setTitle("Enable Location")
+                .setMessage("Your Locations Settings is set to 'Off'." +
+                        "\nPlease Enable Location to use this app")
+                .setPositiveButton("Location Settings", { _, _ ->
+                    val myIntent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+                    startActivity(myIntent)
+                })
+                .setNegativeButton("Cancel", { _, _ -> })
+
+        dialog.show()
+    }
+
+    private fun startLocationUpdates() {
+        mLocationRequest = LocationRequest.create()
+                .setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY)
+                .setInterval(updateInterval)
+                .setFastestInterval(fastestInterval)
+
+        // Request location updates
+        if (ActivityCompat.checkSelfPermission(this,
+                        Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this,
+                        Manifest.permission.ACCESS_COARSE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            return
+        }
+        LocationServices.getFusedLocationProviderClient(this)
+                .requestLocationUpdates(mLocationRequest, mLocationCallback, null)
+    }
+
+    ///// END - GPS LOCATION /////
 
     private fun disconnectUser(){
         if(Global.CurrentUser.user != null) {

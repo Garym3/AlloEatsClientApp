@@ -17,7 +17,7 @@ import fr.esgi.alloeatsclientapp.R
 import fr.esgi.alloeatsclientapp.models.nearbySearch.Restaurant
 
 
-class CustomAdapter(context: Context, dataSet: ArrayList<Restaurant>) : BaseAdapter() {
+class RestaurantAdapter(context: Context, dataSet: ArrayList<Restaurant>) : BaseAdapter() {
     private val restaurants: ArrayList<Restaurant> = dataSet
 
     override fun getItem(position: Int) = restaurants[position]

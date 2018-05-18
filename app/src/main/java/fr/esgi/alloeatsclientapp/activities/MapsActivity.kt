@@ -199,11 +199,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener, 
     }
 
     private fun parseLocationResult(result: JSONObject?) {
-        var id: String? = null
-        var place_id: String? = null
+        //var id: String? = null
+        //var place_id: String? = null
         var placeName: String? = null
-        var reference: String? = null
-        var icon: String? = null
+        //var reference: String? = null
+        //var icon: String? = null
         var vicinity: String? = null
 
         var latitude: Double
@@ -219,8 +219,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener, 
                 for (i in 0 until jsonArray!!.length()) {
                     val place: JSONObject = jsonArray.getJSONObject(i)
 
-                    id = place.getString(RESTAURANT_ID)
-                    place_id = place.getString(PLACE_ID)
+                    //id = place.getString(RESTAURANT_ID)
+                    //place_id = place.getString(PLACE_ID)
 
                     if (!place.isNull(NAME)) {
                         placeName = place.getString(NAME)
@@ -230,8 +230,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener, 
                     }
                     latitude = place.getJSONObject(GEOMETRY).getJSONObject(LOCATION).getDouble(LATITUDE)
                     longitude = place.getJSONObject(GEOMETRY).getJSONObject(LOCATION).getDouble(LONGITUDE)
-                    reference = place.getString(REFERENCE)
-                    icon = place.getString(ICON)
+                    //reference = place.getString(REFERENCE)
+                    //icon = place.getString(ICON)
 
                     val markerOptions = MarkerOptions()
                     val latLng = LatLng(latitude, longitude)
