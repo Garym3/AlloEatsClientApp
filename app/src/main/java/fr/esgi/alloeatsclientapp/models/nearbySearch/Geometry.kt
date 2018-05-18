@@ -16,7 +16,7 @@ class Geometry : Serializable, Parcelable {
     @Expose
     var viewport: Viewport? = null
 
-    protected constructor(`in`: Parcel) {
+    private constructor(`in`: Parcel) {
         this.location = `in`.readValue(Location::class.java.classLoader) as Location
         this.viewport = `in`.readValue(Viewport::class.java.classLoader) as Viewport
     }

@@ -13,6 +13,7 @@ import java.util.ArrayList
 
 import butterknife.BindView
 import butterknife.ButterKnife
+import com.squareup.picasso.Picasso
 
 import fr.esgi.alloeatsclientapp.R
 import fr.esgi.alloeatsclientapp.models.nearbySearch.Restaurant
@@ -50,8 +51,14 @@ class RestaurantAdapter(context: Context, dataSet: ArrayList<Restaurant>) : Base
         holder.isOpen.text = toReadableOpenNow(restaurant.openingHours?.openNow!!)
         holder.rating.text = sb.append("rating: ").append(restaurant.rating.toString())
         holder.address.text = sb.append("Address: ").append(restaurant.vicinity)
-        if(!restaurant.icon.isNullOrEmpty()){
-            holder.mainPhoto.setImageURI(Uri.parse(restaurant.icon))
+        if(restaurant.icon == null){
+            Picasso.with(view.context)
+                    .load("")
+                    .placeholder(R.drawable.default_restaurant_icon)
+                    .error(R.drawable.default_restaurant_icon)
+                    .resize(256, 256)
+                    .centerCrop()
+                    .into(holder.mainPhoto)
         }
         //Default
         //holder.mainPhoto.setImageResource(R.drawable.default_restaurant_icon)

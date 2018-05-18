@@ -9,7 +9,6 @@ import android.location.LocationManager
 import android.os.Bundle
 import android.provider.Settings
 import android.support.design.widget.NavigationView
-import android.support.multidex.MultiDex
 import android.support.v4.app.ActivityCompat
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
@@ -64,7 +63,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private lateinit var restaurantAdapter: RestaurantAdapter
 
     @BindView(R.id.restaurantsList)
-    lateinit var restaurantListView: ListView
+    private lateinit var restaurantListView: ListView
 
     @OnItemClick(R.id.restaurantsList)
     internal fun onItemClick(position: Int) {
@@ -82,8 +81,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         setContentView(R.layout.activity_maps)
 
         createLocationCallback()
-
-        MultiDex.install(this)
 
         mGoogleApiClient = GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
@@ -139,15 +136,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.main, menu)
         return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         return when (item.itemId) {
             R.id.action_settings -> true
             else -> super.onOptionsItemSelected(item)
@@ -156,14 +149,17 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.nav_maps -> {
+            R.id.nav_finder -> {
                 startActivity(Intent(applicationContext, MapsActivity::class.java))
+            }
+            R.id.nav_orders -> {
+                //startActivity(Intent(applicationContext, OrdersActivity::class.java))
             }
             R.id.nav_favorites -> {
                 //startActivity(Intent(applicationContext, FavoritesActivity::class.java))
             }
             R.id.nav_manage -> {
-                startActivity(Intent(applicationContext, SettingsActivity::class.java))
+                //startActivity(Intent(applicationContext, SettingsActivity::class.java))
             }
             R.id.nav_logout -> {
                 finish()

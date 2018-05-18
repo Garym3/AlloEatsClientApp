@@ -16,7 +16,7 @@ class Viewport : Serializable, Parcelable {
     @Expose
     var southwest: Southwest? = null
 
-    protected constructor(`in`: Parcel) {
+    private constructor(`in`: Parcel) {
         this.northeast = `in`.readValue(Northeast::class.java.classLoader) as Northeast
         this.southwest = `in`.readValue(Southwest::class.java.classLoader) as Southwest
     }

@@ -16,7 +16,7 @@ class Location : Serializable, Parcelable {
     @Expose
     var lng: Double? = null
 
-    protected constructor(`in`: Parcel) {
+    private constructor(`in`: Parcel) {
         this.lat = `in`.readValue(Double::class.java.classLoader) as Double
         this.lng = `in`.readValue(Double::class.java.classLoader) as Double
     }

@@ -6,6 +6,7 @@ import android.os.Parcelable
 import android.os.Parcelable.Creator
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
+import java.net.URI
 
 class Photo : Serializable, Parcelable {
 
@@ -17,15 +18,15 @@ class Photo : Serializable, Parcelable {
     var htmlAttributions: List<String>? = null
     @SerializedName("photo_reference")
     @Expose
-    var photoReference: String? = null
+    var photoReference: URI? = null
     @SerializedName("width")
     @Expose
     var width: Int? = null
 
-    protected constructor(`in`: Parcel) {
+    private constructor(`in`: Parcel) {
         this.height = `in`.readValue(Int::class.java.classLoader) as Int
         `in`.readList(this.htmlAttributions, java.lang.String::class.java.classLoader)
-        this.photoReference = `in`.readValue(String::class.java.classLoader) as String
+        this.photoReference = `in`.readValue(URI::class.java.classLoader) as URI
         this.width = `in`.readValue(Int::class.java.classLoader) as Int
     }
 
@@ -42,7 +43,7 @@ class Photo : Serializable, Parcelable {
      * @param htmlAttributions
      * @param photoReference
      */
-    constructor(height: Int?, htmlAttributions: List<String>, photoReference: String, width: Int?) : super() {
+    constructor(height: Int?, htmlAttributions: List<String>, photoReference: URI, width: Int?) : super() {
         this.height = height
         this.htmlAttributions = htmlAttributions
         this.photoReference = photoReference
@@ -59,7 +60,7 @@ class Photo : Serializable, Parcelable {
         return this
     }
 
-    fun withPhotoReference(photoReference: String): Photo {
+    fun withPhotoReference(photoReference: URI): Photo {
         this.photoReference = photoReference
         return this
     }
@@ -82,16 +83,12 @@ class Photo : Serializable, Parcelable {
 
     companion object {
         val CREATOR: Parcelable.Creator<Photo> = object : Creator<Photo> {
-
-
             override fun createFromParcel(`in`: Parcel): Photo {
                 return Photo(`in`)
             }
-
             override fun newArray(size: Int): Array<Photo?> {
                 return arrayOfNulls(size)
             }
-
         }
         private const val serialVersionUID = -8660548007293533870L
     }

@@ -6,6 +6,7 @@ import android.os.Parcelable
 import android.os.Parcelable.Creator
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
+import java.net.URI
 
 
 /*
@@ -18,7 +19,7 @@ class Restaurant : Serializable, Parcelable {
     var geometry: Geometry? = null
     @SerializedName("icon")
     @Expose
-    var icon: String? = null
+    var icon: URI? = null
     @SerializedName("id")
     @Expose
     var id: String? = null
@@ -52,7 +53,7 @@ class Restaurant : Serializable, Parcelable {
 
     private constructor(`in`: Parcel) {
         this.geometry = `in`.readValue(Geometry::class.java.classLoader) as Geometry
-        this.icon = `in`.readValue(String::class.java.classLoader) as String
+        this.icon = `in`.readValue(URI::class.java.classLoader) as URI
         this.id = `in`.readValue(String::class.java.classLoader) as String
         this.name = `in`.readValue(String::class.java.classLoader) as String
         this.openingHours = `in`.readValue(OpeningHours::class.java.classLoader) as OpeningHours
@@ -86,7 +87,7 @@ class Restaurant : Serializable, Parcelable {
      * @param reference
      * @param geometry
      */
-    constructor(geometry: Geometry, icon: String, id: String, name: String, openingHours: OpeningHours, photos: List<Photo>, placeId: String, rating: Double?, reference: String, scope: String, types: List<String>, vicinity: String) : super() {
+    constructor(geometry: Geometry, icon: URI, id: String, name: String, openingHours: OpeningHours, photos: List<Photo>, placeId: String, rating: Double?, reference: String, scope: String, types: List<String>, vicinity: String) : super() {
         this.geometry = geometry
         this.icon = icon
         this.id = id
@@ -106,7 +107,7 @@ class Restaurant : Serializable, Parcelable {
         return this
     }
 
-    fun withIcon(icon: String): Restaurant {
+    fun withIcon(icon: URI): Restaurant {
         this.icon = icon
         return this
     }
