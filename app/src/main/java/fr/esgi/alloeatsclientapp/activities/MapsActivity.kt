@@ -38,25 +38,17 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import fr.esgi.alloeatsclientapp.R
-import fr.esgi.alloeatsclientapp.utils.Global
 import fr.esgi.alloeatsclientapp.utils.Global.Companion.GEOMETRY
-import fr.esgi.alloeatsclientapp.utils.Global.Companion.GOOGLE_BROWSER_API_KEY
 import fr.esgi.alloeatsclientapp.utils.Global.Companion.ICON
 import fr.esgi.alloeatsclientapp.utils.Global.Companion.LATITUDE
 import fr.esgi.alloeatsclientapp.utils.Global.Companion.LOCATION
 import fr.esgi.alloeatsclientapp.utils.Global.Companion.LONGITUDE
-import fr.esgi.alloeatsclientapp.utils.Global.Companion.MIN_DISTANCE_CHANGE_FOR_UPDATES
-import fr.esgi.alloeatsclientapp.utils.Global.Companion.MIN_TIME_BW_UPDATES
 import fr.esgi.alloeatsclientapp.utils.Global.Companion.NAME
-import fr.esgi.alloeatsclientapp.utils.Global.Companion.OK
 import fr.esgi.alloeatsclientapp.utils.Global.Companion.PLACE_ID
-import fr.esgi.alloeatsclientapp.utils.Global.Companion.PLAY_SERVICES_RESOLUTION_REQUEST
-import fr.esgi.alloeatsclientapp.utils.Global.Companion.PROXIMITY_RADIUS
 import fr.esgi.alloeatsclientapp.utils.Global.Companion.REFERENCE
-import fr.esgi.alloeatsclientapp.utils.Global.Companion.STATUS
 import fr.esgi.alloeatsclientapp.utils.Global.Companion.RESTAURANT_ID
 import fr.esgi.alloeatsclientapp.utils.Global.Companion.VICINITY
-import fr.esgi.alloeatsclientapp.utils.Global.Companion.ZERO_RESULTS
+import fr.esgi.alloeatsclientapp.utils.Google
 import org.json.JSONException
 import org.json.JSONObject
 
@@ -64,13 +56,11 @@ import org.json.JSONObject
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener, GoogleApiClient.OnConnectionFailedListener {
     private lateinit var mMap: GoogleMap
     private lateinit var fusedLocationClient: FusedLocationProviderClient
-    private var currentLocation: Location? = null
     private var mGeoDataClient: GeoDataClient? = null
     private var mPlaceDetectionClient: PlaceDetectionClient? = null
     private var mGoogleApiClient: GoogleApiClient? = null
     private var locationManager: LocationManager? = null
     private var mainCoordinatorLayout: CoordinatorLayout? = null
-    private val REQUESTINT: Int = 177
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -112,8 +102,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener, 
                 "Error code: " + p0.errorCode.toString()+ "\n" + p0.errorMessage)
 
         Toast.makeText(this,
-                "A connection error has occurred. P" +
-                        "lease enable internet or restart the application if necessary.",
+                "A connection error has occurred. " +
+                        "Please enable internet or restart the application if necessary.",
                 Toast.LENGTH_LONG).show()
     }
 
@@ -177,7 +167,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener, 
             onLocationChanged(location)
         }
 
-        locationManager?.requestLocationUpdates(bestProvider, MIN_TIME_BW_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES, this)
+        locationManager?.requestLocationUpdates(bestProvider, Google.MIN_TIME_BW_UPDATES,
+                Google.MIN_DISTANCE_CHANGE_FOR_UPDATES, this)
     }
 
     private fun loadNearByPlaces(latitude: Double?, longitude: Double?) {
@@ -186,10 +177,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener, 
                 StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?")
 
         googlePlacesUrl.append("location=").append(latitude).append(",").append(longitude)
-        googlePlacesUrl.append("&radius=").append(PROXIMITY_RADIUS)
+        googlePlacesUrl.append("&radius=").append(Google.PROXIMITY_RADIUS)
         googlePlacesUrl.append("&types=").append(type)
         googlePlacesUrl.append("&sensor=true")
-        googlePlacesUrl.append("&key=$GOOGLE_BROWSER_API_KEY")
+        googlePlacesUrl.append("&key=$Google.GOOGLE_BROWSER_API_KEY")
 
         val queue: RequestQueue = Volley.newRequestQueue(this)
 
@@ -221,7 +212,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener, 
         try {
             val jsonArray = result?.getJSONArray("results")
 
-            if (result?.getString(STATUS).equals(OK, ignoreCase = true)) {
+            if (result?.getString(Google.STATUS).equals(Google.OK, ignoreCase = true)) {
 
                 mMap.clear()
 
@@ -254,10 +245,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener, 
                         jsonArray.length().toString() + " restaurants found!",
                         Toast.LENGTH_LONG).show()
 
-            } else if (result?.getString(STATUS).equals(ZERO_RESULTS, ignoreCase = true)) {
+            } else if (result?.getString(Google.STATUS).equals(Google.ZERO_RESULTS, ignoreCase = true)) {
 
                 Toast.makeText(baseContext,
-                        "No restaurant found in ${Global.PROXIMITY_RADIUS / 1000}KM radius!",
+                        "No restaurant found in ${Google.PROXIMITY_RADIUS / 1000}KM radius!",
                         Toast.LENGTH_LONG).show()
             }
 
@@ -273,7 +264,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener, 
 
         if (resultCode != ConnectionResult.SUCCESS) {
             if (apiAvailability.isUserResolvableError(resultCode)) {
-                apiAvailability.getErrorDialog(this, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST).show()
+                apiAvailability.getErrorDialog(this, resultCode,
+                        Google.PLAY_SERVICES_RESOLUTION_REQUEST).show()
             } else {
                 Log.i("MapsActivity", "This device is not supported.")
                 finish()

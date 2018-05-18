@@ -1,4 +1,4 @@
-package fr.esgi.alloeatsclientapp.utils
+package fr.esgi.alloeatsclientapp.business
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -14,7 +14,7 @@ import butterknife.BindView
 import butterknife.ButterKnife
 
 import fr.esgi.alloeatsclientapp.R
-import fr.esgi.alloeatsclientapp.models.Restaurant
+import fr.esgi.alloeatsclientapp.models.nearbySearch.Restaurant
 
 
 class CustomAdapter(context: Context, dataSet: ArrayList<Restaurant>) : BaseAdapter() {
@@ -42,15 +42,20 @@ class CustomAdapter(context: Context, dataSet: ArrayList<Restaurant>) : BaseAdap
 
         // Get the data item for this position
         val restaurant = getItem(position)
+        val sb = StringBuilder()
 
         // Populate the data into the template view using the data object
-        holder.name.text = restaurant.name
-        holder.isOpen.text = restaurant.formatIsOpenedNow()
-        holder.rating.text = restaurant.rating.toString()
-        holder.address.text = restaurant.address
+        holder.name.text = sb.append("Name: ").append(restaurant.name)
+        holder.isOpen.text = toReadableOpenNow(restaurant.openingHours?.openNow!!)
+        holder.rating.text = sb.append("rating: ").append(restaurant.rating.toString())
+        holder.address.text = sb.append("Address: ").append(restaurant.vicinity)
         holder.mainPhoto.setImageResource(R.drawable.default_restaurant_icon)
 
         return view
+    }
+
+    private fun toReadableOpenNow(isOpenNow: Boolean): String{
+        return if(isOpenNow) "Opened" else "Closed"
     }
 
     internal class ViewHolder(view: View) {

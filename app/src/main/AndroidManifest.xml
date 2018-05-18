@@ -63,6 +63,7 @@
             android:name=".activities.MapsActivity"
             android:label="@string/title_activity_maps" />
         <activity android:name=".activities.PaypalCheckoutActivity" />
+        <service android:name=".business.LocationService" android:process=":locationService" />
     </application>
 
 </manifest>
