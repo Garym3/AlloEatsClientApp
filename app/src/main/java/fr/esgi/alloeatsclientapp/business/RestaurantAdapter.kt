@@ -1,6 +1,7 @@
 package fr.esgi.alloeatsclientapp.business
 
 import android.content.Context
+import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -49,7 +50,11 @@ class RestaurantAdapter(context: Context, dataSet: ArrayList<Restaurant>) : Base
         holder.isOpen.text = toReadableOpenNow(restaurant.openingHours?.openNow!!)
         holder.rating.text = sb.append("rating: ").append(restaurant.rating.toString())
         holder.address.text = sb.append("Address: ").append(restaurant.vicinity)
-        holder.mainPhoto.setImageResource(R.drawable.default_restaurant_icon)
+        if(!restaurant.icon.isNullOrEmpty()){
+            holder.mainPhoto.setImageURI(Uri.parse(restaurant.icon))
+        }
+        //Default
+        //holder.mainPhoto.setImageResource(R.drawable.default_restaurant_icon)
 
         return view
     }
