@@ -178,9 +178,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener, 
 
         googlePlacesUrl.append("location=").append(latitude).append(",").append(longitude)
         googlePlacesUrl.append("&radius=").append(Google.PROXIMITY_RADIUS)
-        googlePlacesUrl.append("&types=").append(type)
-        googlePlacesUrl.append("&sensor=true")
+        googlePlacesUrl.append("&type=").append(type)
         googlePlacesUrl.append("&key=$Google.GOOGLE_BROWSER_API_KEY")
+        Log.i("Google API Request", googlePlacesUrl.toString())
 
         val queue: RequestQueue = Volley.newRequestQueue(this)
 

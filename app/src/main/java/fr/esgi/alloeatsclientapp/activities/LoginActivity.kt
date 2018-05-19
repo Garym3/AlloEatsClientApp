@@ -136,7 +136,7 @@ class LoginActivity : AppCompatActivity(), LoaderCallbacks<Cursor> {
                     showProgress(false)
                 },
                 {
-                    Log.e("onErrorResponse", it?.message)
+                    Log.e("LoginActivity", it?.message)
                     showProgress(false)
                 }).go()
     }

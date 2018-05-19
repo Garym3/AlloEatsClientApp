@@ -21,6 +21,7 @@ import fr.esgi.alloeatsclientapp.models.nearbySearch.Restaurant
 
 class RestaurantAdapter(context: Context, dataSet: ArrayList<Restaurant>) : BaseAdapter() {
     private val restaurants: ArrayList<Restaurant> = dataSet
+    private val sb = StringBuilder()
 
     override fun getItem(position: Int) = restaurants[position]
 
@@ -44,30 +45,38 @@ class RestaurantAdapter(context: Context, dataSet: ArrayList<Restaurant>) : Base
 
         // Get the data item for this position
         val restaurant = getItem(position)
-        val sb = StringBuilder()
 
         // Populate the data into the template view using the data object
         holder.name.text = sb.append("Name: ").append(restaurant.name)
-        holder.isOpen.text = toReadableOpenNow(restaurant.openingHours?.openNow!!)
-        holder.rating.text = sb.append("rating: ").append(restaurant.rating.toString())
+        sb.setLength(0)
+        holder.isOpen.text = sb.append("Is open: ").append(toReadableOpenNow(restaurant.openingHours?.openNow))
+        sb.setLength(0)
+        holder.rating.text = sb.append("Rating: ").append(toReadableRating(restaurant))
+        sb.setLength(0)
         holder.address.text = sb.append("Address: ").append(restaurant.vicinity)
-        if(restaurant.icon == null){
+        sb.setLength(0)
+
+        if(restaurant.photos?.get(0)?.photoReference != null){
             Picasso.with(view.context)
-                    .load("")
+                    .load(restaurant.photos?.get(0)?.photoReference)
                     .placeholder(R.drawable.default_restaurant_icon)
                     .error(R.drawable.default_restaurant_icon)
                     .resize(256, 256)
                     .centerCrop()
                     .into(holder.mainPhoto)
         }
-        //Default
-        //holder.mainPhoto.setImageResource(R.drawable.default_restaurant_icon)
 
         return view
     }
 
-    private fun toReadableOpenNow(isOpenNow: Boolean): String{
-        return if(isOpenNow) "Opened" else "Closed"
+    private fun toReadableRating(restaurant: Restaurant) : String{
+        return if(restaurant.rating == null) "No rating" else restaurant.rating.toString()
+    }
+
+    private fun toReadableOpenNow(isOpenNow: Boolean?): String{
+        if(isOpenNow == null) return "Unknown"
+        if(isOpenNow) { return "Yes" }
+        return "No"
     }
 
     internal class ViewHolder(view: View) {

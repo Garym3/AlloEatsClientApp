@@ -8,6 +8,7 @@ import android.location.Location
 import android.location.LocationManager
 import android.os.Bundle
 import android.provider.Settings
+import android.support.design.widget.FloatingActionButton
 import android.support.design.widget.NavigationView
 import android.support.v4.app.ActivityCompat
 import android.support.v4.view.GravityCompat
@@ -37,10 +38,11 @@ import com.android.volley.toolbox.Volley
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.location.*
+import com.google.android.gms.tasks.Tasks.await
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonParser
+import com.inaka.killertask.KillerTask
 import fr.esgi.alloeatsclientapp.business.NearbyPlacesBuilder
-import fr.esgi.alloeatsclientapp.models.nearbySearch.Restaurant
 import fr.esgi.alloeatsclientapp.utils.Google
 import org.json.JSONObject
 import java.util.*
@@ -56,14 +58,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private lateinit var mLocation: Location
     private var mLocationRequest: LocationRequest? = null
     private var mLocationCallback: LocationCallback? = null
-    private val updateInterval = (2 * 1000).toLong()
+    private val updateInterval = (5 * 1000).toLong()
     private val fastestInterval: Long = 2000
-    private var mCurrentLocation: Location? = null
+    private var mCurrentLocation: Location? = Location("")
 
     private lateinit var restaurantAdapter: RestaurantAdapter
 
     @BindView(R.id.restaurantsList)
-    private lateinit var restaurantListView: ListView
+    lateinit var restaurantListView: ListView
 
     @OnItemClick(R.id.restaurantsList)
     internal fun onItemClick(position: Int) {
@@ -78,8 +80,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         ButterKnife.setDebug(true)
         ButterKnife.bind(this)
         setSupportActionBar(toolbar)
-        setContentView(R.layout.activity_maps)
 
+        // Paris Coordinates by default
+        mCurrentLocation?.latitude = 48.864716
+        mCurrentLocation?.longitude = 2.349014
         createLocationCallback()
 
         mGoogleApiClient = GoogleApiClient.Builder(this)
@@ -89,10 +93,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 .build()
 
         mLocationManager = this.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        checkLocation()
-        getNearbyRestaurants(mCurrentLocation!!.latitude, mCurrentLocation!!.longitude)
 
-        goToTopButton.setOnClickListener { _ ->
+        findViewById<FloatingActionButton>(R.id.goToTopButton).setOnClickListener { _ ->
             restaurantAdapter.notifyDataSetChanged()
         }
 
@@ -117,13 +119,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onStart() {
         super.onStart()
-        mGoogleApiClient.connect()
+        if (!mGoogleApiClient.isConnected) mGoogleApiClient.connect()
+        checkLocation()
     }
 
     override fun onStop() {
         super.onStop()
         if (mGoogleApiClient.isConnected) mGoogleApiClient.disconnect()
-        //TODO: Remettre dans le onDestroy si bug
         disconnectUser()
     }
 
@@ -188,6 +190,25 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 else socialUser?.email
     }
 
+    private fun disconnectUser(){
+        if(Global.CurrentUser.user != null) {
+            Global.CurrentUser.user = null
+        } else {
+            try {
+                SocialUserAuth.disconnect(SocialUserAuth.FACEBOOK)
+                SocialUserAuth.disconnect(SocialUserAuth.GOOGLE)
+                SocialUserAuth.disconnect(SocialUserAuth.TWITTER)
+            } catch (e: Exception){
+                try {
+                    SocialUserAuth.disconnect(SocialUserAuth.GOOGLE)
+                    SocialUserAuth.disconnect(SocialUserAuth.TWITTER)
+                } catch (e: Exception){
+                    SocialUserAuth.disconnect(SocialUserAuth.TWITTER)
+                }
+            }
+        }
+    }
+
     private fun getNearbyRestaurants(latitude: Double?, longitude: Double?) {
         val type = "restaurant"
         val googlePlacesUrl =
@@ -195,25 +216,22 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         googlePlacesUrl.append("location=").append(latitude).append(",").append(longitude)
         googlePlacesUrl.append("&radius=").append(Google.PROXIMITY_RADIUS)
-        googlePlacesUrl.append("&types=").append(type)
-        googlePlacesUrl.append("&sensor=true")
+        googlePlacesUrl.append("&type=").append(type)
+        googlePlacesUrl.append("&keyword=").append(type)
         googlePlacesUrl.append("&key=${Google.GOOGLE_BROWSER_API_KEY}")
+        Log.i("Google API Request", googlePlacesUrl.toString())
 
         val queue: RequestQueue = Volley.newRequestQueue(this)
 
         val request = JsonObjectRequest(Request.Method.GET, googlePlacesUrl.toString(), null,
                 Response.Listener<JSONObject> { response ->
                     Log.i(tag, "onResponse: Result= " + response.toString())
-                    val restaurants: ArrayList<Restaurant> = ArrayList()
                     val gson = GsonBuilder().serializeNulls().create()
                     val npBuilder = gson.fromJson(JsonParser().parse(response.toString()), NearbyPlacesBuilder::class.java)
 
                     if(!npBuilder.status.equals("OK")) return@Listener
 
-                    restaurants.clear()
-                    restaurants.addAll(npBuilder.results!!)
-
-                    restaurantAdapter = RestaurantAdapter(applicationContext, restaurants)
+                    restaurantAdapter = RestaurantAdapter(applicationContext, ArrayList(npBuilder.restaurants))
                     restaurantListView.adapter = restaurantAdapter
                 },
                 Response.ErrorListener { error ->
@@ -226,47 +244,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     ///// GPS LOCATION /////
-
-    override fun onConnectionSuspended(p0: Int) {
-
-        Log.i(tag, "Connection Suspended")
-        mGoogleApiClient.connect()
-    }
-
-    override fun onConnectionFailed(connectionResult: ConnectionResult) {
-        Log.i(tag, "Connection failed. Error: " + connectionResult.errorCode)
-    }
-
-    override fun onLocationChanged(location: Location) {
-        val msg = "Updated Location: Latitude " + location.longitude + location.longitude
-        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
-    }
-
-    override fun onConnected(bundle: Bundle?) {
-
-        if (ActivityCompat.checkSelfPermission(this,
-                        Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(
-                        this, Manifest.permission.ACCESS_COARSE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-
-            return
-        }
-
-        startLocationUpdates()
-
-        val fusedLocationProviderClient :
-                FusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
-
-        fusedLocationProviderClient.lastLocation
-                .addOnSuccessListener(this, { location ->
-                    // Got last known location. In some rare situations this can be null.
-                    if (location != null) {
-                        mLocation = location
-                    }
-                })
-    }
 
     /**
      * Creates a callback for receiving location events.
@@ -298,8 +275,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 .setMessage("Your Locations Settings is set to 'Off'." +
                         "\nPlease Enable Location to use this app")
                 .setPositiveButton("Location Settings", { _, _ ->
-                    val myIntent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
-                    startActivity(myIntent)
+                    startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
                 })
                 .setNegativeButton("Cancel", { _, _ -> })
 
@@ -308,7 +284,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private fun startLocationUpdates() {
         mLocationRequest = LocationRequest.create()
-                .setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY)
+                .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
                 .setInterval(updateInterval)
                 .setFastestInterval(fastestInterval)
 
@@ -321,28 +297,56 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 != PackageManager.PERMISSION_GRANTED) {
             return
         }
+
         LocationServices.getFusedLocationProviderClient(this)
                 .requestLocationUpdates(mLocationRequest, mLocationCallback, null)
     }
 
-    ///// END - GPS LOCATION /////
+    override fun onConnectionSuspended(p0: Int) {
 
-    private fun disconnectUser(){
-        if(Global.CurrentUser.user != null) {
-            Global.CurrentUser.user = null
-        } else {
-            try {
-                SocialUserAuth.disconnect(SocialUserAuth.FACEBOOK)
-                SocialUserAuth.disconnect(SocialUserAuth.GOOGLE)
-                SocialUserAuth.disconnect(SocialUserAuth.TWITTER)
-            } catch (e: Exception){
-                try {
-                    SocialUserAuth.disconnect(SocialUserAuth.GOOGLE)
-                    SocialUserAuth.disconnect(SocialUserAuth.TWITTER)
-                } catch (e: Exception){
-                    SocialUserAuth.disconnect(SocialUserAuth.TWITTER)
-                }
-            }
-        }
+        Log.i(tag, "Connection Suspended")
+        mGoogleApiClient.connect()
     }
+
+    override fun onConnectionFailed(connectionResult: ConnectionResult) {
+        Log.i(tag, "Connection failed. Error: " + connectionResult.errorCode)
+    }
+
+    override fun onLocationChanged(location: Location) {
+        val msg = "Updated Location: Latitude " + location.longitude + location.longitude
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
+        updateLocation()
+    }
+
+    override fun onConnected(bundle: Bundle?) {
+        updateLocation()
+    }
+
+    private fun updateLocation(){
+        if (ActivityCompat.checkSelfPermission(this,
+                        Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(
+                        this, Manifest.permission.ACCESS_COARSE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            return
+        }
+
+        startLocationUpdates()
+
+        val fusedLocationProviderClient :FusedLocationProviderClient =
+                LocationServices.getFusedLocationProviderClient(this)
+
+        fusedLocationProviderClient.lastLocation
+                .addOnSuccessListener(this, { location ->
+                    // Got last known location. In some rare situations this can be null.
+                    if (location != null) {
+                        mLocation = location
+                        getNearbyRestaurants(mCurrentLocation?.latitude, mCurrentLocation?.longitude)
+                    }
+                })
+    }
+
+    ///// END - GPS LOCATION /////
 }

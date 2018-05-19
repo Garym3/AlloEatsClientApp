@@ -15,14 +15,14 @@ class NearbyPlacesBuilder : Serializable, Parcelable {
     var htmlAttributions: List<Any>? = null
     @SerializedName("results")
     @Expose
-    var results: List<Restaurant>? = null
+    var restaurants: List<Restaurant>? = null
     @SerializedName("status")
     @Expose
     var status: String? = null
 
-    protected constructor(`in`: Parcel) {
+    private constructor(`in`: Parcel) {
         `in`.readList(this.htmlAttributions, Any::class.java.classLoader)
-        `in`.readList(this.results, Restaurant::class.java.classLoader)
+        `in`.readList(this.restaurants, Restaurant::class.java.classLoader)
         this.status = `in`.readValue(String::class.java.classLoader) as String
     }
 
@@ -40,7 +40,7 @@ class NearbyPlacesBuilder : Serializable, Parcelable {
      */
     constructor(htmlAttributions: List<Any>, results: List<Restaurant>, status: String) : super() {
         this.htmlAttributions = htmlAttributions
-        this.results = results
+        this.restaurants = results
         this.status = status
     }
 
@@ -50,7 +50,7 @@ class NearbyPlacesBuilder : Serializable, Parcelable {
     }
 
     fun withResults(results: List<Restaurant>): NearbyPlacesBuilder {
-        this.results = results
+        this.restaurants = results
         return this
     }
 
@@ -61,7 +61,7 @@ class NearbyPlacesBuilder : Serializable, Parcelable {
 
     override fun writeToParcel(dest: Parcel, flags: Int) {
         dest.writeList(htmlAttributions)
-        dest.writeList(results)
+        dest.writeList(restaurants)
         dest.writeValue(status)
     }
 
