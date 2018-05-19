@@ -26,11 +26,12 @@
     <include layout="@layout/content_main" />
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/goToTopButton"
+        android:id="@+id/refreshButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
-        app:srcCompat="@android:drawable/arrow_up_float" />
+        app:backgroundTint="@android:color/holo_orange_dark"
+        app:srcCompat="@drawable/ic_sync_black_24dp" />
 
 </android.support.design.widget.CoordinatorLayout>

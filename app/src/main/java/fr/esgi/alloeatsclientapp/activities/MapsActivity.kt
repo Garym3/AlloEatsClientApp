@@ -39,14 +39,10 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import fr.esgi.alloeatsclientapp.R
 import fr.esgi.alloeatsclientapp.utils.Global.Companion.GEOMETRY
-import fr.esgi.alloeatsclientapp.utils.Global.Companion.ICON
 import fr.esgi.alloeatsclientapp.utils.Global.Companion.LATITUDE
 import fr.esgi.alloeatsclientapp.utils.Global.Companion.LOCATION
 import fr.esgi.alloeatsclientapp.utils.Global.Companion.LONGITUDE
 import fr.esgi.alloeatsclientapp.utils.Global.Companion.NAME
-import fr.esgi.alloeatsclientapp.utils.Global.Companion.PLACE_ID
-import fr.esgi.alloeatsclientapp.utils.Global.Companion.REFERENCE
-import fr.esgi.alloeatsclientapp.utils.Global.Companion.RESTAURANT_ID
 import fr.esgi.alloeatsclientapp.utils.Global.Companion.VICINITY
 import fr.esgi.alloeatsclientapp.utils.Google
 import org.json.JSONException
@@ -171,7 +167,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener, 
                 Google.MIN_DISTANCE_CHANGE_FOR_UPDATES, this)
     }
 
-    private fun loadNearByPlaces(latitude: Double?, longitude: Double?) {
+    private fun loadNearbyPlaces(latitude: Double?, longitude: Double?) {
         val type = "restaurant"
         val googlePlacesUrl =
                 StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?")
@@ -284,18 +280,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener, 
         mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng))
         mMap.animateCamera(CameraUpdateFactory.zoomTo(15f))
 
-        loadNearByPlaces(latitude, longitude)
+        loadNearbyPlaces(latitude, longitude)
     }
 
-    override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {}
 
-    override fun onProviderEnabled(provider: String?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun onProviderEnabled(provider: String?) {}
 
-    override fun onProviderDisabled(provider: String?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun onProviderDisabled(provider: String?) {}
 }

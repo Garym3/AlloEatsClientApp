@@ -1,12 +1,16 @@
 package fr.esgi.alloeatsclientapp.activities
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
+import android.location.LocationListener
 import android.location.LocationManager
+import android.location.LocationProvider
 import android.os.Bundle
+import android.os.Looper
 import android.provider.Settings
 import android.support.design.widget.FloatingActionButton
 import android.support.design.widget.NavigationView
@@ -35,10 +39,6 @@ import com.android.volley.RequestQueue
 import com.android.volley.Response
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
-import com.google.android.gms.common.ConnectionResult
-import com.google.android.gms.common.api.GoogleApiClient
-import com.google.android.gms.location.*
-import com.google.android.gms.tasks.Tasks.await
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonParser
 import com.inaka.killertask.KillerTask
@@ -48,19 +48,12 @@ import org.json.JSONObject
 import java.util.*
 
 
-class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener,
-        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
-        com.google.android.gms.location.LocationListener{
-    
+class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, LocationListener{
+    private val GPS_INTERNET_LOCATION_PERIMISSIONS_REQUEST_CODE = 1
     private val tag = "MainActivity"
-    private lateinit var mGoogleApiClient: GoogleApiClient
     private var mLocationManager: LocationManager? = null
-    private lateinit var mLocation: Location
-    private var mLocationRequest: LocationRequest? = null
-    private var mLocationCallback: LocationCallback? = null
-    private val updateInterval = (5 * 1000).toLong()
-    private val fastestInterval: Long = 2000
-    private var mCurrentLocation: Location? = Location("")
+    private var mLocation: Location? = Location("")
+    private var shouldUpdate = true
 
     private lateinit var restaurantAdapter: RestaurantAdapter
 
@@ -81,21 +74,30 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         ButterKnife.bind(this)
         setSupportActionBar(toolbar)
 
-        // Paris Coordinates by default
-        mCurrentLocation?.latitude = 48.864716
-        mCurrentLocation?.longitude = 2.349014
-        createLocationCallback()
-
-        mGoogleApiClient = GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(LocationServices.API)
-                .build()
-
         mLocationManager = this.getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
-        findViewById<FloatingActionButton>(R.id.goToTopButton).setOnClickListener { _ ->
-            restaurantAdapter.notifyDataSetChanged()
+        requestLocation()
+
+        findViewById<FloatingActionButton>(R.id.refreshButton).setOnClickListener { _ ->
+            /*if(!restaurantAdapter.isEmpty && restaurantListView.count > 0) {
+                restaurantListView.smoothScrollToPosition(0)
+            }*/
+            KillerTask(
+                    {
+                        while (restaurantListView.count <= 0 && !isLocationEnabled()){}
+                        this@MainActivity.runOnUiThread({
+                            requestLocation()
+                        })
+                    },
+                    {
+                        getNearbyRestaurants()
+                        Toast.makeText(applicationContext,
+                                "Refreshing...",
+                                Toast.LENGTH_SHORT).show()
+                    },
+                    {
+                        Log.e(tag, it?.message)
+                    }).go()
         }
 
         val toggle = ActionBarDrawerToggle(
@@ -111,21 +113,31 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         val navigationView = findViewById<NavigationView>(R.id.nav_view)
         val headerView = navigationView.getHeaderView(0)
-        val usernameTextView = headerView.findViewById<TextView>(R.id.username_textview)
-        val emailTextView = headerView.findViewById<TextView>(R.id.email_textview)
+        val usernameTextView = headerView.findViewById<TextView>(R.id.username_textView)
+        val emailTextView = headerView.findViewById<TextView>(R.id.email_textView)
 
         setDisplayedCredentials(isStandardAccount, usernameTextView, emailTextView)
     }
 
     override fun onStart() {
         super.onStart()
-        if (!mGoogleApiClient.isConnected) mGoogleApiClient.connect()
-        checkLocation()
-    }
+
+        if (!hasLocationPermissions()) {
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION), GPS_INTERNET_LOCATION_PERIMISSIONS_REQUEST_CODE)
+        } else if(checkLocation()){
+            requestLocation()
+            shouldUpdate = true
+        }
+     }
+
 
     override fun onStop() {
         super.onStop()
-        if (mGoogleApiClient.isConnected) mGoogleApiClient.disconnect()
+        shouldUpdate = true
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
         disconnectUser()
     }
 
@@ -134,6 +146,21 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             drawer_layout.closeDrawer(GravityCompat.START)
         } else {
             super.onBackPressed()
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        when (requestCode) {
+            GPS_INTERNET_LOCATION_PERIMISSIONS_REQUEST_CODE -> {
+                // If request is cancelled, the result arrays are empty.
+                if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                    requestLocation()
+                    return
+                } else {
+                    finish()
+                }
+            }
         }
     }
 
@@ -159,9 +186,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
             R.id.nav_favorites -> {
                 //startActivity(Intent(applicationContext, FavoritesActivity::class.java))
-            }
-            R.id.nav_manage -> {
-                //startActivity(Intent(applicationContext, SettingsActivity::class.java))
             }
             R.id.nav_logout -> {
                 finish()
@@ -209,16 +233,65 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
-    private fun getNearbyRestaurants(latitude: Double?, longitude: Double?) {
-        val type = "restaurant"
+    ///// LOCATION /////
+
+    @SuppressLint("MissingPermission")
+    override fun onLocationChanged(location: Location?) {
+        if(hasLocationPermissions() && isLocationEnabled() && shouldUpdate) {
+            mLocation = location
+            try {
+                getNearbyRestaurants()
+            } catch (ex: Exception){
+                Log.e(tag, ex.message)
+            }
+        }
+    }
+
+    override fun onStatusChanged(provider: String?, status: Int, bundle: Bundle?) {
+        if(status == LocationProvider.TEMPORARILY_UNAVAILABLE || status == LocationProvider.OUT_OF_SERVICE) {
+            shouldUpdate = false
+        }
+    }
+
+    override fun onProviderEnabled(p0: String?) {
+        requestLocation()
+        shouldUpdate = true
+    }
+
+    override fun onProviderDisabled(p0: String?) {
+        shouldUpdate = false
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun requestLocation(){
+        if(isGpsEnabled()){
+            mLocationManager?.removeUpdates(this)
+            mLocationManager?.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+                    10000, 0f, this)
+        } else if(areMobileDataEnabled()){
+            mLocationManager?.removeUpdates(this)
+            mLocationManager?.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,
+                    10000, 0f, this)
+        }
+    }
+
+    private fun hasLocationPermissions(): Boolean{
+        return ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
+    }
+
+    private fun getNearbyRestaurants() {
+        if(mLocation?.latitude == 0.0 && mLocation?.longitude == 0.0) {
+            shouldUpdate = true
+            return
+        }
+
         val googlePlacesUrl =
                 StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?")
-
-        googlePlacesUrl.append("location=").append(latitude).append(",").append(longitude)
-        googlePlacesUrl.append("&radius=").append(Google.PROXIMITY_RADIUS)
-        googlePlacesUrl.append("&type=").append(type)
-        googlePlacesUrl.append("&keyword=").append(type)
-        googlePlacesUrl.append("&key=${Google.GOOGLE_BROWSER_API_KEY}")
+        .append("location=").append(mLocation?.latitude).append(",").append(mLocation?.longitude)
+        .append("&radius=").append(Google.PROXIMITY_RADIUS)
+        .append("&type=").append(Google.TYPE)
+        .append("&keyword=").append(Google.KEYWORD)
+        .append("&key=${Google.GOOGLE_BROWSER_API_KEY}")
         Log.i("Google API Request", googlePlacesUrl.toString())
 
         val queue: RequestQueue = Volley.newRequestQueue(this)
@@ -241,30 +314,26 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         )
 
         queue.add(request)
-    }
-
-    ///// GPS LOCATION /////
-
-    /**
-     * Creates a callback for receiving location events.
-     */
-    private fun createLocationCallback() {
-        mLocationCallback = object : LocationCallback() {
-            override fun onLocationResult(locationResult: LocationResult?) {
-                super.onLocationResult(locationResult)
-                mCurrentLocation = locationResult!!.lastLocation
-            }
-        }
+        shouldUpdate = false
     }
 
     private fun checkLocation(): Boolean {
-        if(!isLocationEnabled())
+        if(!isLocationEnabled()) {
             showAlert()
+            return false
+        }
         return isLocationEnabled()
     }
 
+    private fun isGpsEnabled(): Boolean{
+        return mLocationManager!!.isProviderEnabled(LocationManager.GPS_PROVIDER)
+    }
+
+    private fun areMobileDataEnabled(): Boolean{
+        return mLocationManager!!.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
+    }
+
     private fun isLocationEnabled(): Boolean {
-        mLocationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
         return mLocationManager!!.isProviderEnabled(LocationManager.GPS_PROVIDER)
                 || mLocationManager!!.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
     }
@@ -282,71 +351,5 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         dialog.show()
     }
 
-    private fun startLocationUpdates() {
-        mLocationRequest = LocationRequest.create()
-                .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
-                .setInterval(updateInterval)
-                .setFastestInterval(fastestInterval)
-
-        // Request location updates
-        if (ActivityCompat.checkSelfPermission(this,
-                        Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(this,
-                        Manifest.permission.ACCESS_COARSE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-            return
-        }
-
-        LocationServices.getFusedLocationProviderClient(this)
-                .requestLocationUpdates(mLocationRequest, mLocationCallback, null)
-    }
-
-    override fun onConnectionSuspended(p0: Int) {
-
-        Log.i(tag, "Connection Suspended")
-        mGoogleApiClient.connect()
-    }
-
-    override fun onConnectionFailed(connectionResult: ConnectionResult) {
-        Log.i(tag, "Connection failed. Error: " + connectionResult.errorCode)
-    }
-
-    override fun onLocationChanged(location: Location) {
-        val msg = "Updated Location: Latitude " + location.longitude + location.longitude
-        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
-        updateLocation()
-    }
-
-    override fun onConnected(bundle: Bundle?) {
-        updateLocation()
-    }
-
-    private fun updateLocation(){
-        if (ActivityCompat.checkSelfPermission(this,
-                        Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(
-                        this, Manifest.permission.ACCESS_COARSE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-
-            return
-        }
-
-        startLocationUpdates()
-
-        val fusedLocationProviderClient :FusedLocationProviderClient =
-                LocationServices.getFusedLocationProviderClient(this)
-
-        fusedLocationProviderClient.lastLocation
-                .addOnSuccessListener(this, { location ->
-                    // Got last known location. In some rare situations this can be null.
-                    if (location != null) {
-                        mLocation = location
-                        getNearbyRestaurants(mCurrentLocation?.latitude, mCurrentLocation?.longitude)
-                    }
-                })
-    }
-
-    ///// END - GPS LOCATION /////
+    ///// END - LOCATION /////
 }

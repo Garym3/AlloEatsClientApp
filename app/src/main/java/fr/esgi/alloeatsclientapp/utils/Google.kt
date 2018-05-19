@@ -15,6 +15,8 @@ class Google {
         const val GOOGLE_BROWSER_API_KEY = "AIzaSyByPm_M8iKQpDqteolcEYtz4YcfKDFZL_M"
         const val PLAY_SERVICES_RESOLUTION_REQUEST = 9000
         const val PROXIMITY_RADIUS = 5000 // meters
+        const val TYPE = "restaurant"
+        const val KEYWORD = "restaurant"
 
         // The minimum distance to change Updates in meters
         const val MIN_DISTANCE_CHANGE_FOR_UPDATES: Float = 10f // meters

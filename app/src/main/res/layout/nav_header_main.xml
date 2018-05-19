@@ -17,10 +17,11 @@
         android:layout_width="81dp"
         android:layout_height="81dp"
         android:paddingTop="@dimen/nav_header_vertical_spacing"
-        app:srcCompat="@drawable/pizza_logo" />
+        app:srcCompat="@drawable/pizza_logo"
+        android:contentDescription="@string/pizza_logo_contentDescription_menu_drawer" />
 
     <TextView
-        android:id="@+id/username_textview"
+        android:id="@+id/username_textView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="@dimen/nav_header_vertical_spacing"
@@ -28,7 +29,7 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
     <TextView
-        android:id="@+id/email_textview"
+        android:id="@+id/email_textView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="" />
