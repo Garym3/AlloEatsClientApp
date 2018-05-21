@@ -1,12 +1,10 @@
-package fr.esgi.alloeatsclientapp.models.nearbySearch
+package fr.esgi.alloeatsclientapp.models.google.details
 
-import java.io.Serializable
 import android.os.Parcel
 import android.os.Parcelable
-import android.os.Parcelable.Creator
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
-import java.net.URI
+import java.io.Serializable
 
 class Photo : Serializable, Parcelable {
 
@@ -23,7 +21,7 @@ class Photo : Serializable, Parcelable {
     @Expose
     var width: Int? = null
 
-    private constructor(`in`: Parcel) {
+    protected constructor(`in`: Parcel) {
         this.height = `in`.readValue(Int::class.java.classLoader) as Int
         `in`.readList(this.htmlAttributions, java.lang.String::class.java.classLoader)
         this.photoReference = `in`.readValue(String::class.java.classLoader) as String
@@ -43,7 +41,7 @@ class Photo : Serializable, Parcelable {
      * @param htmlAttributions
      * @param photoReference
      */
-    constructor(height: Int?, htmlAttributions: List<String>, photoReference: String, width: Int?) : super() {
+    constructor(height: Int?, htmlAttributions: List<String>, photoReference: String?, width: Int?) : super() {
         this.height = height
         this.htmlAttributions = htmlAttributions
         this.photoReference = photoReference
@@ -60,7 +58,7 @@ class Photo : Serializable, Parcelable {
         return this
     }
 
-    fun withPhotoReference(photoReference: String): Photo {
+    fun withPhotoReference(photoReference: String?): Photo {
         this.photoReference = photoReference
         return this
     }
@@ -82,15 +80,19 @@ class Photo : Serializable, Parcelable {
     }
 
     companion object {
-        val CREATOR: Parcelable.Creator<Photo> = object : Creator<Photo> {
+        val CREATOR: Parcelable.Creator<Photo> = object : Parcelable.Creator<Photo> {
+
+
             override fun createFromParcel(`in`: Parcel): Photo {
                 return Photo(`in`)
             }
+
             override fun newArray(size: Int): Array<Photo?> {
                 return arrayOfNulls(size)
             }
+
         }
-        private const val serialVersionUID = -8660548007293533870L
+        private const val serialVersionUID = -4819298440302309192L
     }
 
 }

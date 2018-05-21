@@ -1,33 +1,29 @@
 package fr.esgi.alloeatsclientapp.business
 
 import android.content.Context
-import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.ImageView
 import android.widget.TextView
-
-import java.util.ArrayList
-
 import butterknife.BindView
 import butterknife.ButterKnife
 import com.squareup.picasso.Picasso
-
 import fr.esgi.alloeatsclientapp.R
-import fr.esgi.alloeatsclientapp.models.nearbySearch.Restaurant
+import fr.esgi.alloeatsclientapp.models.google.details.Result
+import java.util.*
 
 
-class RestaurantAdapter(context: Context, dataSet: ArrayList<Restaurant>) : BaseAdapter() {
-    private val restaurants: ArrayList<Restaurant> = dataSet
+class RestaurantAdapter(context: Context, dataSet: ArrayList<Result>) : BaseAdapter() {
+    private val googleRestaurants: ArrayList<Result> = dataSet
     private val sb = StringBuilder()
 
-    override fun getItem(position: Int) = restaurants[position]
+    override fun getItem(position: Int) = googleRestaurants[position]
 
     override fun getItemId(position: Int) = position.toLong()
 
-    override fun getCount() = restaurants.size
+    override fun getCount() = googleRestaurants.size
 
     private val inflater = LayoutInflater.from(context)
 
@@ -69,8 +65,8 @@ class RestaurantAdapter(context: Context, dataSet: ArrayList<Restaurant>) : Base
         return view
     }
 
-    private fun toReadableRating(restaurant: Restaurant) : String{
-        return if(restaurant.rating == null) "No rating" else restaurant.rating.toString()
+    private fun toReadableRating(googleRestaurant: Result) : String{
+        return if(googleRestaurant.rating == null) "No rating" else googleRestaurant.rating.toString()
     }
 
     private fun toReadableOpenNow(isOpenNow: Boolean?): String{

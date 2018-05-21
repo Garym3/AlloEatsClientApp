@@ -1,13 +1,14 @@
-package fr.esgi.alloeatsclientapp.models.nearbySearch
+package fr.esgi.alloeatsclientapp.models.google.details
 
-import java.io.Serializable
 import android.os.Parcel
 import android.os.Parcelable
-import android.os.Parcelable.Creator
+
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
-class Southwest : Serializable, Parcelable {
+import java.io.Serializable
+
+class Northeast : Serializable, Parcelable {
 
     @SerializedName("lat")
     @Expose
@@ -37,12 +38,12 @@ class Southwest : Serializable, Parcelable {
         this.lng = lng
     }
 
-    fun withLat(lat: Double?): Southwest {
+    fun withLat(lat: Double?): Northeast {
         this.lat = lat
         return this
     }
 
-    fun withLng(lng: Double?): Southwest {
+    fun withLng(lng: Double?): Northeast {
         this.lng = lng
         return this
     }
@@ -57,19 +58,19 @@ class Southwest : Serializable, Parcelable {
     }
 
     companion object {
-        val CREATOR: Parcelable.Creator<Southwest> = object : Creator<Southwest> {
+        val CREATOR: Parcelable.Creator<Northeast> = object : Parcelable.Creator<Northeast> {
 
 
-            override fun createFromParcel(`in`: Parcel): Southwest {
-                return Southwest(`in`)
+            override fun createFromParcel(`in`: Parcel): Northeast {
+                return Northeast(`in`)
             }
 
-            override fun newArray(size: Int): Array<Southwest?> {
+            override fun newArray(size: Int): Array<Northeast?> {
                 return arrayOfNulls(size)
             }
 
         }
-        private const val serialVersionUID = -2211606649785679737L
+        private const val serialVersionUID = -7451612213545257897L
     }
 
 }

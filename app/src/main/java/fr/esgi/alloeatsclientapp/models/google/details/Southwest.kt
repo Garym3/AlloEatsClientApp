@@ -1,13 +1,14 @@
-package fr.esgi.alloeatsclientapp.models.nearbySearch
+package fr.esgi.alloeatsclientapp.models.google.details
 
-import java.io.Serializable
 import android.os.Parcel
 import android.os.Parcelable
-import android.os.Parcelable.Creator
+
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
-class Location : Serializable, Parcelable {
+import java.io.Serializable
+
+class Southwest : Serializable, Parcelable {
 
     @SerializedName("lat")
     @Expose
@@ -16,7 +17,7 @@ class Location : Serializable, Parcelable {
     @Expose
     var lng: Double? = null
 
-    private constructor(`in`: Parcel) {
+    protected constructor(`in`: Parcel) {
         this.lat = `in`.readValue(Double::class.java.classLoader) as Double
         this.lng = `in`.readValue(Double::class.java.classLoader) as Double
     }
@@ -37,12 +38,12 @@ class Location : Serializable, Parcelable {
         this.lng = lng
     }
 
-    fun withLat(lat: Double?): Location {
+    fun withLat(lat: Double?): Southwest {
         this.lat = lat
         return this
     }
 
-    fun withLng(lng: Double?): Location {
+    fun withLng(lng: Double?): Southwest {
         this.lng = lng
         return this
     }
@@ -57,19 +58,19 @@ class Location : Serializable, Parcelable {
     }
 
     companion object {
-        val CREATOR: Parcelable.Creator<Location> = object : Creator<Location> {
+        val CREATOR: Parcelable.Creator<Southwest> = object : Parcelable.Creator<Southwest> {
 
 
-            override fun createFromParcel(`in`: Parcel): Location {
-                return Location(`in`)
+            override fun createFromParcel(`in`: Parcel): Southwest {
+                return Southwest(`in`)
             }
 
-            override fun newArray(size: Int): Array<Location?> {
+            override fun newArray(size: Int): Array<Southwest?> {
                 return arrayOfNulls(size)
             }
 
         }
-        private const val serialVersionUID = -5225164070828355264L
+        private const val serialVersionUID = 6648847875863693764L
     }
 
 }

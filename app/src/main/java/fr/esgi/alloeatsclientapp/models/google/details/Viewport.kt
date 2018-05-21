@@ -1,11 +1,12 @@
-package fr.esgi.alloeatsclientapp.models.nearbySearch
+package fr.esgi.alloeatsclientapp.models.google.details
 
-import java.io.Serializable
 import android.os.Parcel
 import android.os.Parcelable
-import android.os.Parcelable.Creator
+
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
+
+import java.io.Serializable
 
 class Viewport : Serializable, Parcelable {
 
@@ -16,7 +17,7 @@ class Viewport : Serializable, Parcelable {
     @Expose
     var southwest: Southwest? = null
 
-    private constructor(`in`: Parcel) {
+    protected constructor(`in`: Parcel) {
         this.northeast = `in`.readValue(Northeast::class.java.classLoader) as Northeast
         this.southwest = `in`.readValue(Southwest::class.java.classLoader) as Southwest
     }
@@ -57,7 +58,7 @@ class Viewport : Serializable, Parcelable {
     }
 
     companion object {
-        val CREATOR: Parcelable.Creator<Viewport> = object : Creator<Viewport> {
+        val CREATOR: Parcelable.Creator<Viewport> = object : Parcelable.Creator<Viewport> {
 
 
             override fun createFromParcel(`in`: Parcel): Viewport {
@@ -69,7 +70,7 @@ class Viewport : Serializable, Parcelable {
             }
 
         }
-        private const val serialVersionUID = -6832787807926196322L
+        private const val serialVersionUID = -5972651612795251455L
     }
 
 }

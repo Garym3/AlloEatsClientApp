@@ -1,24 +1,29 @@
-package fr.esgi.alloeatsclientapp.models.nearbySearch
+package fr.esgi.alloeatsclientapp.models.google.details
 
-import java.io.Serializable
 import android.os.Parcel
 import android.os.Parcelable
-import android.os.Parcelable.Creator
+
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
+
+import java.io.Serializable
 
 class OpeningHours : Serializable, Parcelable {
 
     @SerializedName("open_now")
     @Expose
     var openNow: Boolean? = null
+    @SerializedName("periods")
+    @Expose
+    var periods: List<Period>? = null
     @SerializedName("weekday_text")
     @Expose
-    var weekdayText: List<Any>? = null
+    var weekdayText: List<String>? = null
 
     protected constructor(`in`: Parcel) {
         this.openNow = `in`.readValue(Boolean::class.java.classLoader) as Boolean
-        `in`.readList(this.weekdayText, Any::class.java.classLoader)
+        `in`.readList(this.periods, Period::class.java.classLoader)
+        `in`.readList(this.weekdayText, java.lang.String::class.java.classLoader)
     }
 
     /**
@@ -30,10 +35,12 @@ class OpeningHours : Serializable, Parcelable {
     /**
      *
      * @param weekdayText
+     * @param periods
      * @param openNow
      */
-    constructor(openNow: Boolean?, weekdayText: List<Any>) : super() {
+    constructor(openNow: Boolean?, periods: List<Period>, weekdayText: List<String>) : super() {
         this.openNow = openNow
+        this.periods = periods
         this.weekdayText = weekdayText
     }
 
@@ -42,13 +49,19 @@ class OpeningHours : Serializable, Parcelable {
         return this
     }
 
-    fun withWeekdayText(weekdayText: List<Any>): OpeningHours {
+    fun withPeriods(periods: List<Period>): OpeningHours {
+        this.periods = periods
+        return this
+    }
+
+    fun withWeekdayText(weekdayText: List<String>): OpeningHours {
         this.weekdayText = weekdayText
         return this
     }
 
     override fun writeToParcel(dest: Parcel, flags: Int) {
         dest.writeValue(openNow)
+        dest.writeList(periods)
         dest.writeList(weekdayText)
     }
 
@@ -57,7 +70,7 @@ class OpeningHours : Serializable, Parcelable {
     }
 
     companion object {
-        val CREATOR: Parcelable.Creator<OpeningHours> = object : Creator<OpeningHours> {
+        val CREATOR: Parcelable.Creator<OpeningHours> = object : Parcelable.Creator<OpeningHours> {
 
 
             override fun createFromParcel(`in`: Parcel): OpeningHours {
@@ -69,7 +82,7 @@ class OpeningHours : Serializable, Parcelable {
             }
 
         }
-        private const val serialVersionUID = 6604596531706430870L
+        private const val serialVersionUID = 4099933168907090067L
     }
 
 }

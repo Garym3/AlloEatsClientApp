@@ -1,7 +1,7 @@
 package fr.esgi.alloeatsclientapp.utils
 
-import fr.esgi.alloeatsclientapp.models.User
 import com.paypal.android.sdk.payments.PayPalConfiguration
+import fr.esgi.alloeatsclientapp.models.User
 
 class Global {
     companion object {
@@ -9,7 +9,6 @@ class Global {
         const val PASSWORDMINLENGTH = 8
         const val PASSWORDREQUIREDCHARS = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}$"
         const val wsPassword = "FeNBGjzDG354@ofe*\$32Rfsss4F"
-        const val TAG = "AlloEatsClientApp"
 
         // Key for nearby places JSON from Google
         const val GEOMETRY = "geometry"
