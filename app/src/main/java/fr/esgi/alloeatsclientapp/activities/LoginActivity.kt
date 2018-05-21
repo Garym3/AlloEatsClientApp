@@ -1,36 +1,34 @@
 package fr.esgi.alloeatsclientapp.activities
 
+import android.Manifest.permission.READ_CONTACTS
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.annotation.TargetApi
-import android.content.pm.PackageManager
-import android.support.design.widget.Snackbar
-import android.support.v7.app.AppCompatActivity
 import android.app.LoaderManager.LoaderCallbacks
 import android.content.CursorLoader
+import android.content.Intent
 import android.content.Loader
+import android.content.pm.PackageManager
 import android.database.Cursor
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.ContactsContract
+import android.support.design.widget.Snackbar
+import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.view.View
+import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
 import android.widget.ArrayAdapter
-import android.widget.TextView
-
-import android.Manifest.permission.READ_CONTACTS
-import android.content.Intent
-import android.util.Log
-import android.view.WindowManager
 import android.widget.Button
-import com.facebook.*
+import android.widget.TextView
+import com.facebook.CallbackManager
 import com.inaka.killertask.KillerTask
 import fr.esgi.alloeatsclientapp.R
 import fr.esgi.alloeatsclientapp.api.user.SocialUserAuth
 import fr.esgi.alloeatsclientapp.api.user.UserAuth
 import fr.esgi.alloeatsclientapp.business.LoginRepository
-
 import kotlinx.android.synthetic.main.activity_login.*
 import java.util.*
 
@@ -55,11 +53,11 @@ class LoginActivity : AppCompatActivity(), LoaderCallbacks<Cursor> {
         // Hides keyboard on focus only
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN)
 
-        emailTextView = findViewById(R.id.email)
-        passwordTextView = findViewById(R.id.password)
-        loginFacebookButton = findViewById(R.id.facebook_login_button)
-        loginGoogleButton = findViewById(R.id.google_login_button)
-        loginTwitterButton = findViewById(R.id.twitter_login_button)
+        emailTextView = findViewById(R.id.email_EditText)
+        passwordTextView = findViewById(R.id.password_EditText)
+        loginFacebookButton = findViewById(R.id.facebookLogin_Button)
+        loginGoogleButton = findViewById(R.id.googleLogin_Button)
+        loginTwitterButton = findViewById(R.id.twitterLogin_Button)
 
         handleConnection()
 
@@ -159,17 +157,17 @@ class LoginActivity : AppCompatActivity(), LoaderCallbacks<Cursor> {
                         }
                     })
 
-            login_progress.visibility = if (show) View.VISIBLE else View.GONE
-            login_progress.animate()
+            loginProgress_ProgressBar.visibility = if (show) View.VISIBLE else View.GONE
+            loginProgress_ProgressBar.animate()
                     .setDuration(shortAnimTime)
                     .alpha((if (show) 1 else 0).toFloat())
                     .setListener(object : AnimatorListenerAdapter() {
                         override fun onAnimationEnd(animation: Animator) {
-                            login_progress.visibility = if (show) View.VISIBLE else View.GONE
+                            loginProgress_ProgressBar.visibility = if (show) View.VISIBLE else View.GONE
                         }
                     })
         } else {
-            login_progress.visibility = if (show) View.VISIBLE else View.GONE
+            loginProgress_ProgressBar.visibility = if (show) View.VISIBLE else View.GONE
             credentials_view.visibility = if (show) View.GONE else View.VISIBLE
         }
     }
@@ -209,13 +207,13 @@ class LoginActivity : AppCompatActivity(), LoaderCallbacks<Cursor> {
         val adapter = ArrayAdapter(this@LoginActivity,
                 android.R.layout.simple_dropdown_item_1line, emailAddressCollection)
 
-        email.setAdapter(adapter)
+        email_EditText.setAdapter(adapter)
     }
 
     private fun handleConnection(){
-        email_sign_in_button.setOnClickListener { attemptLogin() }
+        emailSignin_Button.setOnClickListener { attemptLogin() }
 
-        password.setOnEditorActionListener(TextView.OnEditorActionListener { _, id, _ ->
+        password_EditText.setOnEditorActionListener(TextView.OnEditorActionListener { _, id, _ ->
             if (id == EditorInfo.IME_ACTION_DONE || id == EditorInfo.IME_NULL) {
                 attemptLogin()
                 return@OnEditorActionListener true

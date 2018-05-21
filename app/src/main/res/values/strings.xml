@@ -46,9 +46,9 @@
     <!-- NearbyRestaurantsActivity -->
     <string name="action_preferences">Preferences</string>
     <string name="logout_button">Logout</string>
-    <string name="restaurant_finder_item">Restaurant Finder</string>
-    <string name="favorites_item">Favorites</string>
-    <string name="logout_item">Logout</string>
+    <string name="restaurant_finder_item_text">Restaurant Finder</string>
+    <string name="favorites_item_text">Favorites</string>
+    <string name="logout_item_text">Logout</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="title_activity_main">Nearby Restaurants</string>
@@ -58,7 +58,7 @@
     <string name="restaurant_rating_name">Rating</string>
     <string name="restaurant_is_open_name">Is Open</string>
     <string name="restaurant_name_name">Name</string>
-    <string name="orders_item">My orders</string>
+    <string name="orders_item_text">My orders</string>
     <string name="pizza_logo_contentDescription_menu_drawer">A pizza… yep</string>
 
     <!-- MapsActivity -->
@@ -70,5 +70,6 @@
     <string name="add_to_favorites_button_text">Add to favorites</string>
     <string name="place_order_button_text">Place Order</string>
     <string name="main_photo_restaurant_page_fragment_ImageView">Main photo of this restaurant</string>
+    <string name="nearby_restaurants_item_text">Nearby Restaurants</string>
 
 </resources>

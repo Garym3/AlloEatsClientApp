@@ -7,22 +7,27 @@
         <item
             android:id="@+id/nav_finder"
             android:icon="@drawable/maps_icon"
-            android:title="@string/restaurant_finder_item" />
+            android:title="@string/restaurant_finder_item_text" />
+
+        <item
+            android:id="@+id/nav_restaurantsList"
+            android:icon="@drawable/default_restaurant_icon"
+            android:title="@string/nearby_restaurants_item_text" />
 
         <item
           android:id="@+id/nav_orders"
           android:icon="@drawable/myorders_icon"
-          android:title="@string/orders_item" />
+          android:title="@string/orders_item_text" />
 
         <item
             android:id="@+id/nav_favorites"
             android:icon="@drawable/favorites_icon"
-            android:title="@string/favorites_item" />
+            android:title="@string/favorites_item_text" />
 
         <item
             android:id="@+id/nav_logout"
             android:icon="@drawable/logout_icon"
-            android:title="@string/logout_item" />
+            android:title="@string/logout_item_text" />
     </group>
 
 </menu>

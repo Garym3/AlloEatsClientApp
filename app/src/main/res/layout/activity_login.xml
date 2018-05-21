@@ -1,5 +1,4 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -14,7 +13,7 @@
 
     <!-- Login progress -->
     <ProgressBar
-        android:id="@+id/login_progress"
+        android:id="@+id/loginProgress_ProgressBar"
         style="?android:attr/progressBarStyleLarge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -22,7 +21,7 @@
         android:visibility="gone" />
 
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/mainTitle_TextView"
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:fontFamily="cursive"
@@ -34,7 +33,7 @@
         android:textStyle="bold" />
 
     <TextView
-        android:id="@+id/logIn_title_TextView"
+        android:id="@+id/loginTitle_TextView"
         android:layout_width="match_parent"
         android:layout_height="38dp"
         android:text="@string/loginActivity_textView_headline_text"
@@ -60,7 +59,7 @@
                 android:layout_height="wrap_content">
 
                 <AutoCompleteTextView
-                    android:id="@+id/email"
+                    android:id="@+id/email_EditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/prompt_email"
@@ -76,7 +75,7 @@
                 android:layout_height="wrap_content">
 
                 <EditText
-                    android:id="@+id/password"
+                    android:id="@+id/password_EditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/prompt_password"
@@ -91,7 +90,7 @@
             </android.support.design.widget.TextInputLayout>
 
             <Button
-                android:id="@+id/email_sign_in_button"
+                android:id="@+id/emailSignin_Button"
                 style="@android:style/Widget.Material.Button"
                 android:layout_width="match_parent"
                 android:layout_height="37dp"
@@ -106,7 +105,7 @@
 
 
             <Button
-                android:id="@+id/facebook_login_button"
+                android:id="@+id/facebookLogin_Button"
                 style="@style/com_facebook_button_share"
                 android:layout_width="match_parent"
                 android:layout_height="37dp"
@@ -123,7 +122,7 @@
                 android:textStyle="bold" />
 
             <Button
-                android:id="@+id/google_login_button"
+                android:id="@+id/googleLogin_Button"
                 style="@style/FirebaseUI.Button.AccountChooser.GoogleButton"
                 android:layout_width="match_parent"
                 android:layout_height="42dp"
@@ -137,7 +136,7 @@
                 android:textSize="14sp" />
 
             <Button
-                android:id="@+id/twitter_login_button"
+                android:id="@+id/twitterLogin_Button"
                 style="@style/FirebaseUI.Button.AccountChooser.TwitterButton"
                 android:layout_width="match_parent"
                 android:layout_height="37dp"

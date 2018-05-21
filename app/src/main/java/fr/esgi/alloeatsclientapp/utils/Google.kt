@@ -26,6 +26,6 @@ class Google {
         // The minimum time between updates in minutes
         const val MIN_TIME_BW_UPDATES = (1000 * 60 * 1).toLong() // minutes
 
-        var nearbyRestaurants: ArrayList<Result>? = null
+        var favoriteRestaurants: ArrayList<Result> = ArrayList()
     }
 }

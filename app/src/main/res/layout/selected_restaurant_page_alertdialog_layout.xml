@@ -4,12 +4,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/selectedRestaurantScrollView"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent">
+    android:layout_height="fill_parent"
+    android:background="@color/tw__blue_default">
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/selectedRestaurantRelativeLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:paddingBottom="10dp"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"
+        android:paddingTop="10dp">
 
         <TextView
             android:id="@+id/restaurantName_TextView"
@@ -19,7 +24,9 @@
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
+            android:textAlignment="center"
             android:textAllCaps="true"
+            android:textColor="@color/tw__solid_white"
             android:textSize="14sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
@@ -32,37 +39,45 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="20dip"
-            android:layout_marginBottom="8dp"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="8dp"
-            app:layout_constraintBottom_toTopOf="@+id/restaurantAddress_TextView"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="32dp"
+            android:textAlignment="center"
+            android:textColor="@color/tw__solid_white"
+            app:layout_constraintBottom_toTopOf="@+id/placeOrder_Button"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/restaurantName_TextView"
-            app:layout_constraintVertical_bias="0.521"
+            app:layout_constraintTop_toBottomOf="@+id/restaurantAddress_TextView"
+            app:layout_constraintVertical_bias="0.951"
             tools:text="IsOpen" />
 
-        <TextView
-            android:id="@+id/restaurantRating_TextView"
+        <hyogeun.github.com.colorratingbarlib.ColorRatingBar
+            android:id="@+id/restaurantRating_Stars"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="57dp"
             android:layout_margin="20dip"
             android:layout_marginBottom="8dp"
             android:layout_marginEnd="20dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginStart="8dp"
+            android:rating="3"
+            app:changeable="false"
+            app:empty_color="?attr/colorButtonNormal"
             app:layout_constraintBottom_toTopOf="@+id/restaurantAddress_TextView"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/restaurantName_TextView"
-            app:layout_constraintVertical_bias="0.521"
-            tools:text="Rating" />
+            app:progress_color="@android:color/holo_orange_light" />
 
         <TextView
             android:id="@+id/restaurantAddress_TextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="20dip"
-            android:layout_marginBottom="8dp"
+            android:layout_marginBottom="16dp"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
+            android:textAlignment="center"
+            android:textColor="@color/tw__solid_white"
             app:layout_constraintBottom_toTopOf="@+id/carouselLayout"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -70,13 +85,15 @@
 
         <Button
             android:id="@+id/placeOrder_Button"
-            android:layout_width="135dp"
+            android:layout_width="110dp"
             android:layout_height="50dp"
             android:layout_margin="20dip"
             android:layout_marginBottom="16dp"
             android:layout_marginStart="20dp"
             android:layout_marginTop="8dp"
+            android:background="@android:color/holo_green_light"
             android:text="@string/place_order_button_text"
+            android:textColor="@color/tw__solid_white"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/carouselLayout"
@@ -84,19 +101,21 @@
 
         <Button
             android:id="@+id/dismissRestaurantPageFragmentDialog_button"
-            android:layout_width="135dp"
+            android:layout_width="110dp"
             android:layout_height="50dp"
             android:layout_alignParentBottom="true"
             android:layout_alignParentStart="true"
             android:layout_marginEnd="20dp"
+            android:background="@android:color/holo_red_light"
             android:text="@string/dismiss_fragment_dialog_button_text"
+            android:textColor="@color/tw__solid_white"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/carouselLayout"
-            android:layout_width="256dp"
-            android:layout_height="150dp"
+            android:layout_width="341dp"
+            android:layout_height="189dp"
             android:layout_centerInParent="true"
             android:layout_marginBottom="8dp"
             android:layout_marginEnd="8dp"

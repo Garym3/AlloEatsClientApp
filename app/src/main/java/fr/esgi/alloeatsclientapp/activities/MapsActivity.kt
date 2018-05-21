@@ -50,6 +50,7 @@ import org.json.JSONObject
 
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener, GoogleApiClient.OnConnectionFailedListener {
+    private val TAG: String = "MapsActivity"
     private lateinit var mMap: GoogleMap
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private var mGeoDataClient: GeoDataClient? = null
@@ -175,19 +176,19 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener, 
         googlePlacesUrl.append("location=").append(latitude).append(",").append(longitude)
         googlePlacesUrl.append("&radius=").append(Google.PROXIMITY_RADIUS)
         googlePlacesUrl.append("&type=").append(type)
-        googlePlacesUrl.append("&key=$Google.GOOGLE_BROWSER_API_KEY")
+        googlePlacesUrl.append("&key=").append(Google.GOOGLE_BROWSER_API_KEY)
         Log.i("Google API Request", googlePlacesUrl.toString())
 
         val queue: RequestQueue = Volley.newRequestQueue(this)
 
         val request = JsonObjectRequest(Request.Method.GET, googlePlacesUrl.toString(), null,
                 Response.Listener<JSONObject> { response ->
-                    Log.i("MapsActivity", "onResponse: GoogleRestaurant= " + response.toString())
+                    Log.i(TAG, "onResponse: GoogleRestaurant= " + response.toString())
                     parseLocationResult(response)
                 },
                 Response.ErrorListener { error ->
-                    Log.e("MapsActivity", "onErrorResponse: Error= $error")
-                    Log.e("MapsActivity", "onErrorResponse: Error= " + error?.message)
+                    Log.e(TAG, "onErrorResponse: Error= $error")
+                    Log.e(TAG, "onErrorResponse: Error= " + error?.message)
                 }
         )
 
@@ -250,7 +251,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener, 
 
         } catch (e: JSONException) {
             e.printStackTrace()
-            Log.e("MapsActivity", "parseLocationResult: Error = " + e.message)
+            Log.e(TAG, "parseLocationResult: Error = " + e.message)
         }
     }
 
@@ -263,7 +264,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener, 
                 apiAvailability.getErrorDialog(this, resultCode,
                         Google.PLAY_SERVICES_RESOLUTION_REQUEST).show()
             } else {
-                Log.i("MapsActivity", "This device is not supported.")
+                Log.i(TAG, "This device is not supported.")
                 finish()
             }
             return false

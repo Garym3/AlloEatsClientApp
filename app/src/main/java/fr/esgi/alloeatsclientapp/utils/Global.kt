@@ -23,6 +23,9 @@ class Global {
         const val VICINITY = "vicinity"
         const val PLACE_NAME = "place_name"
 
+        const val codeShowRestaurantPage = 100
+        const val codeAddRestaurantToFavorite = 101
+
         private const val paypalClientId =
                 "AabnpXbIPZviyvDhsA2ziJn8-Eq1Yupbyn3__73I7rZf9lX24fK2bMAed5Ix1ndFA-uxvxluPRxKbOhp"
 

@@ -20,13 +20,13 @@ import com.azoft.carousellayoutmanager.CarouselZoomPostLayoutListener
 import com.azoft.carousellayoutmanager.CenterScrollListener
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonParser
-import com.inaka.killertask.KillerTask
 import fr.esgi.alloeatsclientapp.R
 import fr.esgi.alloeatsclientapp.business.CarouselAdapter
 import fr.esgi.alloeatsclientapp.business.DetailsBuilder
 import fr.esgi.alloeatsclientapp.models.google.details.Photo
 import fr.esgi.alloeatsclientapp.models.google.details.Result
 import fr.esgi.alloeatsclientapp.utils.Google
+import hyogeun.github.com.colorratingbarlib.ColorRatingBar
 import org.json.JSONObject
 
 
@@ -54,8 +54,8 @@ class RestaurantPageDialogFragment : DialogFragment() {
                 selectedGoogleRestaurant.name
         rootView.findViewById<TextView>(R.id.restaurantIsOpen_TextView).text =
                 toReadableOpenNow(selectedGoogleRestaurant.openingHours!!.openNow)
-        rootView.findViewById<TextView>(R.id.restaurantRating_TextView).text =
-                toReadableRating()
+        rootView.findViewById<ColorRatingBar>(R.id.restaurantRating_Stars).rating =
+                selectedGoogleRestaurant.rating!!.toFloat()
         rootView.findViewById<TextView>(R.id.restaurantAddress_TextView).text =
                 selectedGoogleRestaurant.vicinity
 
@@ -77,51 +77,40 @@ class RestaurantPageDialogFragment : DialogFragment() {
     private fun setRestaurantImages(carouselRecyclerView: RecyclerView) {
         val queue: RequestQueue = Volley.newRequestQueue(context)
         val carouselAdapter = CarouselAdapter(context)
+        carouselRecyclerView.adapter = carouselAdapter
 
-        KillerTask(
-                {
-                    val googleDetailsUrl = buildGoogleDetailsUrlRequest()
+        val googleDetailsUrl = buildGoogleDetailsUrlRequest()
 
-                    val request = JsonObjectRequest(Request.Method.GET, googleDetailsUrl.toString(),
-                            null, Response.Listener<JSONObject> { response ->
+        val request = JsonObjectRequest(Request.Method.GET, googleDetailsUrl.toString(),
+                null, Response.Listener<JSONObject> { response ->
 
-                        Log.i(tag, "onResponse: GoogleRestaurant= " + response.toString())
-                        val gson = GsonBuilder().serializeNulls().create()
-                        val detailsBuilder =
-                                gson.fromJson(JsonParser().parse(response.toString()),
-                                        DetailsBuilder::class.java)
+            Log.i(tag, "$TAG: onResponse - GoogleRestaurant= $response")
+            val gson = GsonBuilder().serializeNulls().create()
+            val detailsBuilder =
+                    gson.fromJson(JsonParser().parse(response.toString()),
+                            DetailsBuilder::class.java)
 
-                        if (!detailsBuilder.status.equals("OK")) return@Listener
+            if (!detailsBuilder.status.equals("OK")) return@Listener
 
-                        val restaurantDetails = detailsBuilder.result?.photos!!
+            val restaurantDetails = detailsBuilder.result?.photos!!
 
-                        for (photo: Photo in restaurantDetails) {
-                            if(photo.photoReference == null) continue
+            for (photo: Photo in restaurantDetails) {
+                if(photo.photoReference == null) continue
 
-                            val googleDetailsStr =
-                                    buildGooglePhotoUrlRequest(Uri.parse(photo.photoReference))
+                val googleDetailsStr =
+                        buildGooglePhotoUrlRequest(Uri.parse(photo.photoReference))
 
-                            val googleDetailsUri = Uri.parse(googleDetailsStr.toString())
-                            carouselAdapter.add(googleDetailsUri)
-                        }
-                    },
-                            Response.ErrorListener { error ->
-                                Log.e(tag, "onErrorResponse: Error= $error")
-                                Log.e(tag, "onErrorResponse: Error= " + error?.message)
-                            }
-                    )
+                val googleDetailsUri = Uri.parse(googleDetailsStr.toString())
+                carouselAdapter.add(googleDetailsUri)
+            }
+        },
+                Response.ErrorListener { error ->
+                    Log.e(TAG, "onErrorResponse: Error= $error")
+                    Log.e(TAG, "onErrorResponse: Error= " + error?.message)
+                }
+        )
 
-                    queue.add(request)
-
-                },
-                {
-                    carouselRecyclerView.adapter = carouselAdapter
-                    Log.i(TAG, "All photos retrieved.")
-                },
-                {
-                    carouselRecyclerView.adapter = carouselAdapter
-                    Log.e(TAG, it?.message)
-                }).go()
+        queue.add(request)
     }
 
     private fun buildGooglePhotoUrlRequest(photoLink: Uri?): StringBuilder? {
@@ -132,7 +121,7 @@ class RestaurantPageDialogFragment : DialogFragment() {
                         .append("&maxwidth=").append("512")
                         .append("&key=${Google.GOOGLE_BROWSER_API_KEY}")
 
-        Log.i("Google Photos API Request", googlePhotosUri.toString())
+        Log.i("$TAG: Google Photos API Request", googlePhotosUri.toString())
 
         return googlePhotosUri
     }
@@ -143,18 +132,15 @@ class RestaurantPageDialogFragment : DialogFragment() {
                         .append("placeid=").append(selectedGoogleRestaurant.placeId)
                         .append("&key=${Google.GOOGLE_BROWSER_API_KEY}")
 
-        Log.i("Google Details API Request", googleDetailsUri.toString())
+        Log.i("$TAG: Google Details API Request", googleDetailsUri.toString())
 
         return googleDetailsUri
     }
 
-    private fun toReadableRating() : String{
-        return if(selectedGoogleRestaurant.rating == null) "No rating" else selectedGoogleRestaurant.rating.toString()
-    }
-
     private fun toReadableOpenNow(isOpenNow: Boolean?): String{
-        if(isOpenNow == null) return "Unknown"
-        if(isOpenNow) { return "Yes" }
-        return "No"
+        val str: String? = "Is open: "
+        if(isOpenNow == null) return str + "Unknown"
+        if(isOpenNow) { return str + "Yes" }
+        return str + "No"
     }
 }

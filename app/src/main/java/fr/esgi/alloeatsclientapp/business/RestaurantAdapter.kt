@@ -12,11 +12,11 @@ import butterknife.ButterKnife
 import com.squareup.picasso.Picasso
 import fr.esgi.alloeatsclientapp.R
 import fr.esgi.alloeatsclientapp.models.google.details.Result
+import fr.esgi.alloeatsclientapp.utils.Google
 import java.util.*
 
 
-class RestaurantAdapter(context: Context, dataSet: ArrayList<Result>) : BaseAdapter() {
-    private val googleRestaurants: ArrayList<Result> = dataSet
+class RestaurantAdapter(context: Context, private val googleRestaurants: ArrayList<Result>) : BaseAdapter() {
     private val sb = StringBuilder()
 
     override fun getItem(position: Int) = googleRestaurants[position]
@@ -53,8 +53,16 @@ class RestaurantAdapter(context: Context, dataSet: ArrayList<Result>) : BaseAdap
         sb.setLength(0)
 
         if(restaurant.photos?.get(0)?.photoReference != null){
+            val maxWidth = 256
+            val maxHeight = 256
+            val photoReference = restaurant.photos?.get(0)?.photoReference
+            val googleApiKey = Google.GOOGLE_BROWSER_API_KEY
+            val photoUri = "https://maps.googleapis.com/maps/api/place/photo?" +
+                    "maxwidth=$maxWidth&maxheight=$maxHeight" +
+                    "&photoreference=$photoReference&key=$googleApiKey"
+
             Picasso.with(view.context)
-                    .load(restaurant.photos?.get(0)?.photoReference)
+                    .load(photoUri)
                     .placeholder(R.drawable.default_restaurant_icon)
                     .error(R.drawable.default_restaurant_icon)
                     .resize(256, 256)

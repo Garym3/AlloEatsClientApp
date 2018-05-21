@@ -24,7 +24,6 @@ import android.view.MenuItem
 import android.widget.ListView
 import android.widget.TextView
 import android.widget.Toast
-import android.widget.Toast.LENGTH_SHORT
 import butterknife.BindView
 import butterknife.ButterKnife
 import butterknife.OnItemClick
@@ -55,19 +54,19 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         LocationListener, IOnCodePassListener {
 
     private val LOCATION_PERMISSIONS_REQUEST_CODE = 1
-    private val tag = "MainActivity"
+    private val TAG = "MainActivity"
     private var mLocationManager: LocationManager? = null
     private var mLocation: Location? = Location("")
     private var shouldUpdate = true
     private var selectedGoogleRestaurant: Result? = null
-    private lateinit var restaurantAdapter: RestaurantAdapter
+    private lateinit var mainAdapter: RestaurantAdapter
 
     @BindView(R.id.restaurantsList)
-    lateinit var restaurantListView: ListView
+    lateinit var mainListView: ListView
 
     @OnItemClick(R.id.restaurantsList)
     internal fun onItemClick(position: Int) {
-        selectedGoogleRestaurant = restaurantAdapter.getItem(position)
+        selectedGoogleRestaurant = mainAdapter.getItem(position)
         showClickedRestaurantAlert()
     }
 
@@ -157,13 +156,31 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.nav_finder -> {
+                findViewById<FloatingActionButton>(R.id.refreshButton).show()
                 startActivity(Intent(applicationContext, MapsActivity::class.java))
             }
+            R.id.nav_restaurantsList -> {
+                findViewById<FloatingActionButton>(R.id.refreshButton).show()
+
+                shouldUpdate = true
+                getNearbyRestaurants()
+            }
             R.id.nav_orders -> {
-                //startActivity(Intent(applicationContext, OrdersActivity::class.java))
+                //findViewById<FloatingActionButton>(R.id.refreshButton).hide()
+                return false
             }
             R.id.nav_favorites -> {
-                //startActivity(Intent(applicationContext, FavoritesActivity::class.java))
+                if(Google.favoriteRestaurants.size <= 0) {
+                    Toast.makeText(this, "No favorite restaurants yet"
+                            , Toast.LENGTH_SHORT).show()
+                    return false
+                }
+                findViewById<FloatingActionButton>(R.id.refreshButton).hide()
+                shouldUpdate = false
+
+                mainListView.adapter = null
+                mainAdapter = RestaurantAdapter(applicationContext, Google.favoriteRestaurants)
+                mainListView.adapter = mainAdapter
             }
             R.id.nav_logout -> {
                 finish()
@@ -175,20 +192,28 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     override fun onCodePass(code: Int) {
-        if(code != 100) return
         if(selectedGoogleRestaurant == null) return
 
-        val fragmentManager = fragmentManager
-        val fragment = RestaurantPageDialogFragment()
-        val bundle = Bundle()
-        bundle.putParcelable("selectedGoogleRestaurant", selectedGoogleRestaurant)
-        fragment.arguments = bundle
-        fragment.show(fragmentManager, "RestaurantPageDialogFragment")
+        if(code == Global.codeShowRestaurantPage){
+            val fragment = RestaurantPageDialogFragment()
+            val bundle = Bundle()
+            bundle.putParcelable("selectedGoogleRestaurant", selectedGoogleRestaurant)
+            fragment.arguments = bundle
+            fragment.show(fragmentManager, "RestaurantPageDialogFragment")
+        } else if (code == Global.codeAddRestaurantToFavorite){
+            if(Google.favoriteRestaurants.contains(selectedGoogleRestaurant!!)) {
+                Toast.makeText(this, "This restaurant is already in your favorites"
+                        , Toast.LENGTH_SHORT).show()
+                return
+            }
+            Google.favoriteRestaurants.add(selectedGoogleRestaurant!!)
+        }
     }
 
     private fun setNavigationView() {
         nav_view.setNavigationItemSelectedListener(this)
         nav_view.itemIconTintList = null
+        nav_view.setCheckedItem(R.id.nav_restaurantsList)
     }
 
     private fun setActionBarDrawer() {
@@ -203,20 +228,16 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         findViewById<FloatingActionButton>(R.id.refreshButton).setOnClickListener { _ ->
             KillerTask(
                     {
-                        while (restaurantListView.count <= 0 && !isLocationEnabled()) {
-                        }
+                        while (mainListView.count <= 0 && !isLocationEnabled()) {}
                         this@MainActivity.runOnUiThread({
                             requestLocation()
                         })
                     },
                     {
                         getNearbyRestaurants()
-                        Toast.makeText(applicationContext,
-                                "Refreshing...",
-                                LENGTH_SHORT).show()
                     },
                     {
-                        Log.e(tag, it?.message)
+                        Log.e(TAG, it?.message)
                     }).go()
         }
     }
@@ -268,7 +289,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private fun showClickedRestaurantAlert() {
         if(selectedGoogleRestaurant == null) return
 
-        val fragmentManager = fragmentManager
         RestaurantItemDialogFragment().show(fragmentManager, "RestaurantItemDialogFragment")
     }
 
@@ -281,7 +301,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             try {
                 getNearbyRestaurants()
             } catch (ex: Exception){
-                Log.e(tag, ex.message)
+                Log.e(TAG, ex.message)
             }
         }
     }
@@ -325,12 +345,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
 
         val googleNSUrl = buildGoogleNSUrlRequest()
-
         val queue: RequestQueue = Volley.newRequestQueue(this)
 
         val request = JsonObjectRequest(Request.Method.GET, googleNSUrl.toString(), null,
                 Response.Listener<JSONObject> { response ->
-                    Log.i(tag, "onResponse: GoogleRestaurant= " + response.toString())
+                    Log.i(TAG, "onResponse: GoogleRestaurant= " + response.toString())
                     val gson = GsonBuilder().serializeNulls().create()
                     val npBuilder = gson.fromJson(JsonParser().
                             parse(response.toString()), NearbyPlacesBuilder::class.java)
@@ -340,14 +359,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     val nearbyRestaurants =
                             ArrayList(npBuilder.results)
 
-                    Google.nearbyRestaurants = nearbyRestaurants
+                    //Google.nearbyRestaurants = nearbyRestaurants
 
-                    restaurantAdapter = RestaurantAdapter(applicationContext, nearbyRestaurants)
-                    restaurantListView.adapter = restaurantAdapter
+                    mainAdapter = RestaurantAdapter(applicationContext, nearbyRestaurants)
+                    mainListView.adapter = mainAdapter
                 },
                 Response.ErrorListener { error ->
-                    Log.e(tag, "onErrorResponse: Error= $error")
-                    Log.e(tag, "onErrorResponse: Error= " + error?.message)
+                    Log.e(TAG, "onErrorResponse: Error= $error")
+                    Log.e(TAG, "onErrorResponse: Error= ${error?.message}")
                 }
         )
 

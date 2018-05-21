@@ -295,6 +295,17 @@ class Result : Serializable, Parcelable {
         return 0
     }
 
+    override fun equals(other: Any?): Boolean {
+        if (other === this) {
+            return true
+        }
+        if (other !is Result) {
+            return false
+        }
+
+        return this.placeId.equals(other.placeId)
+    }
+
     companion object {
         val CREATOR: Parcelable.Creator<Result> = object : Parcelable.Creator<Result> {
 

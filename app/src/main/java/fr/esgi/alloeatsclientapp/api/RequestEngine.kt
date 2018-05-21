@@ -1,21 +1,15 @@
 package fr.esgi.alloeatsclientapp.api
 
 import android.content.Context
-
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
-
 import org.apache.http.NameValuePair
 import org.apache.http.message.BasicNameValuePair
 import org.json.JSONObject
-
 import java.io.UnsupportedEncodingException
 import java.net.URLEncoder
 import java.text.SimpleDateFormat
-import java.util.ArrayList
-import java.util.Date
-import java.util.HashMap
-import java.util.Locale
+import java.util.*
 
 
 abstract class RequestEngine {
@@ -34,16 +28,7 @@ abstract class RequestEngine {
 
             val request = object : JsonObjectRequest(methodRequest, URL, content,
                     ({ callbackEngine.onSuccessResponse(it) }), ({ callbackEngine.onErrorResponse(it) })
-            ) {
-                override fun getHeaders(): MutableMap<String, String> {
-                    val params = HashMap<String, String>()
-
-                    /*if (GlobalVariables.CurrentAccount != null)
-                        params.put("Authorization", GlobalVariables.CurrentAccount.getToken())
-                    */
-                    return params
-                }
-            }
+            ) {}
 
             queue.add(request)
         } catch (e: Exception) {

@@ -61,6 +61,7 @@ dependencies {
     implementation 'com.github.inaka:killertask:v1.4'
     implementation "com.squareup.picasso:picasso:2.4.0"
     implementation 'com.azoft.carousellayoutmanager:carousel:1.2.1'
+    implementation 'hyogeun.github.com.colorratingbar:ColorRatingBar:1.0.1'
     implementation 'com.jaychang:simpleauth:2.0.1'
     implementation 'com.jaychang:simpleauth-facebook:2.0.1'
     implementation 'com.jaychang:simpleauth-google:2.0.1'
@@ -93,5 +94,6 @@ android.defaultConfig.manifestPlaceholders = [
         twitterConsumerKey   : "crfMRqsqhgw3A4rDdC90ZERtw",
         twitterConsumerSecret: "aBNNbEuyeT1mu94n3mZ6riSih9FoROU93wNnuM6wHKWd03aB06"
 ]
+
 
 apply plugin: 'com.google.gms.google-services'

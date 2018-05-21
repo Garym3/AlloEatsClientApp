@@ -8,7 +8,7 @@
 
     <TextView
         android:id="@+id/name"
-        android:layout_width="265dp"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
@@ -16,38 +16,20 @@
         android:layout_marginTop="8dp"
         android:maxLines="2"
         android:text="@string/restaurant_name_name"
-        android:textAlignment="textStart"
+        android:textAlignment="viewStart"
         android:textAllCaps="false"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:textColor="@android:color/black"
         app:layout_constraintBottom_toTopOf="@+id/rating"
         app:layout_constraintEnd_toStartOf="@+id/mainPhoto"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.8" />
-
-
-    <TextView
-        android:id="@+id/isOpen"
-        android:layout_width="265dp"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/name"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:text="@string/restaurant_is_open_name"
-        android:textAlignment="textStart"
-        android:textAllCaps="false"
-        android:textColor="@android:color/black"
-        app:layout_constraintBottom_toTopOf="@+id/address"
-        app:layout_constraintEnd_toStartOf="@+id/mainPhoto"
-        app:layout_constraintHorizontal_bias="0.037"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintVertical_bias="0.0" />
 
     <TextView
         android:id="@+id/rating"
-        android:layout_width="265dp"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_alignStart="@+id/name"
         android:layout_centerVertical="true"
@@ -55,30 +37,64 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:text="@string/restaurant_rating_name"
-        android:textAlignment="textStart"
+        android:textAlignment="viewStart"
         android:textAllCaps="false"
         android:textColor="@android:color/black"
         app:layout_constraintBottom_toTopOf="@+id/isOpen"
         app:layout_constraintEnd_toStartOf="@+id/mainPhoto"
-        app:layout_constraintHorizontal_bias="0.036"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/isOpen"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:text="@string/restaurant_is_open_name"
+        android:textAlignment="viewStart"
+        android:textAllCaps="false"
+        android:textColor="@android:color/black"
+        app:layout_constraintBottom_toTopOf="@+id/address"
+        app:layout_constraintEnd_toStartOf="@+id/mainPhoto"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
         android:id="@+id/address"
-        android:layout_width="265dp"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="4dp"
+        android:layout_marginBottom="16dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:maxLines="2"
         android:text="@string/restaurant_address_name"
-        android:textAlignment="textStart"
+        android:textAlignment="viewStart"
         android:textAllCaps="false"
         android:textColor="@android:color/black"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/mainPhoto"
-        app:layout_constraintHorizontal_bias="0.039"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <!--<hyogeun.github.com.colorratingbarlib.ColorRatingBar
+        android:id="@+id/rating"
+        style="?android:ratingBarStyleIndicator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:rating="0"
+        app:changeable="false"
+        app:empty_color="?attr/colorButtonNormal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/address"
+        app:layout_constraintVertical_bias="1.0"
+        app:progress_color="@android:color/holo_orange_light" />-->
 
     <ImageView
         android:id="@+id/mainPhoto"
@@ -87,10 +103,11 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentTop="true"
         android:layout_marginBottom="16dp"
-        android:layout_marginEnd="4dp"
+        android:layout_marginTop="8dp"
         android:contentDescription="@string/restaurant_imageView_description"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-    <!--android:src="@drawable/default_restaurant_icon"-->
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
 
 </android.support.constraint.ConstraintLayout>

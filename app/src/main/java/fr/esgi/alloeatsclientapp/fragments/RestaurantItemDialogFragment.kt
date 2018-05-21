@@ -8,10 +8,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import fr.esgi.alloeatsclientapp.R
+import fr.esgi.alloeatsclientapp.utils.Global.Companion.codeAddRestaurantToFavorite
+import fr.esgi.alloeatsclientapp.utils.Global.Companion.codeShowRestaurantPage
 
 class RestaurantItemDialogFragment : DialogFragment() {
     private var codePasserListener: IOnCodePassListener? = null
-    private val codeShowRestaurantPage = 100
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val rootView =
@@ -41,7 +42,8 @@ class RestaurantItemDialogFragment : DialogFragment() {
     }
 
     private fun addRestaurantToFavorites(){
-
+        codePasserListener?.onCodePass(codeAddRestaurantToFavorite)
+        dismiss()
     }
 
     private fun goToRestaurantPage(){
