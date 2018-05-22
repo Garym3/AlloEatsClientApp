@@ -1,4 +1,4 @@
-package fr.esgi.alloeatsclientapp.business
+package fr.esgi.alloeatsclientapp.business.builders
 
 import android.os.Parcel
 import android.os.Parcelable

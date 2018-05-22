@@ -1,4 +1,4 @@
-package fr.esgi.alloeatsclientapp.business
+package fr.esgi.alloeatsclientapp.business.adapters
 
 import android.content.Context
 import android.net.Uri

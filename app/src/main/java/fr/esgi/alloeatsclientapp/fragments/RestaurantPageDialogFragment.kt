@@ -21,8 +21,8 @@ import com.azoft.carousellayoutmanager.CenterScrollListener
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonParser
 import fr.esgi.alloeatsclientapp.R
-import fr.esgi.alloeatsclientapp.business.CarouselAdapter
-import fr.esgi.alloeatsclientapp.business.DetailsBuilder
+import fr.esgi.alloeatsclientapp.business.adapters.CarouselAdapter
+import fr.esgi.alloeatsclientapp.business.builders.DetailsBuilder
 import fr.esgi.alloeatsclientapp.models.google.details.Photo
 import fr.esgi.alloeatsclientapp.models.google.details.Result
 import fr.esgi.alloeatsclientapp.utils.Google
@@ -31,12 +31,14 @@ import org.json.JSONObject
 
 
 class RestaurantPageDialogFragment : DialogFragment() {
-    private lateinit var selectedGoogleRestaurant: Result
+    private lateinit var selectedRestaurant: Result
     private val TAG: String = "RestaurantPageDialogFragment"
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val rootView = inflater.inflate(R.layout.selected_restaurant_page_alertdialog_layout,
+        val rootView = inflater.inflate(R.layout.selected_restaurant_page_dialog_layout,
                 container, false)
+
+        selectedRestaurant = arguments!!.getParcelable("selectedRestaurant")
 
         setUIElements(rootView)
 
@@ -46,21 +48,25 @@ class RestaurantPageDialogFragment : DialogFragment() {
     }
 
     private fun setUIElements(rootView: View) {
-        selectedGoogleRestaurant = arguments!!.getParcelable("selectedGoogleRestaurant")
-
-        dialog.setTitle(selectedGoogleRestaurant.name)
+        dialog.setTitle(selectedRestaurant.name)
 
         rootView.findViewById<TextView>(R.id.restaurantName_TextView).text =
-                selectedGoogleRestaurant.name
+                selectedRestaurant.name
         rootView.findViewById<TextView>(R.id.restaurantIsOpen_TextView).text =
-                toReadableOpenNow(selectedGoogleRestaurant.openingHours!!.openNow)
+                toReadableOpenNow(selectedRestaurant.openingHours!!.openNow)
         rootView.findViewById<ColorRatingBar>(R.id.restaurantRating_Stars).rating =
-                selectedGoogleRestaurant.rating!!.toFloat()
+                selectedRestaurant.rating!!.toFloat()
         rootView.findViewById<TextView>(R.id.restaurantAddress_TextView).text =
-                selectedGoogleRestaurant.vicinity
+                selectedRestaurant.vicinity
 
+        (rootView.findViewById(R.id.placeOrder_Button) as Button).setOnClickListener({placeOrder()})
         (rootView.findViewById(R.id.dismissRestaurantPageFragmentDialog_button) as Button)
                 .setOnClickListener({ dismiss() })
+    }
+
+    private fun placeOrder() {
+        //TODO: Start MyOrder fragment
+
     }
 
     private fun setCarousel(view: View?){
@@ -129,7 +135,7 @@ class RestaurantPageDialogFragment : DialogFragment() {
     private fun buildGoogleDetailsUrlRequest(): StringBuilder? {
         val googleDetailsUri =
                 StringBuilder("https://maps.googleapis.com/maps/api/place/details/json?")
-                        .append("placeid=").append(selectedGoogleRestaurant.placeId)
+                        .append("placeid=").append(selectedRestaurant.placeId)
                         .append("&key=${Google.GOOGLE_BROWSER_API_KEY}")
 
         Log.i("$TAG: Google Details API Request", googleDetailsUri.toString())

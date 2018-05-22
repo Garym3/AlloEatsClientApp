@@ -11,14 +11,12 @@ import fr.esgi.alloeatsclientapp.R
 import fr.esgi.alloeatsclientapp.utils.Global.Companion.codeAddRestaurantToFavorite
 import fr.esgi.alloeatsclientapp.utils.Global.Companion.codeShowRestaurantPage
 
-class RestaurantItemDialogFragment : DialogFragment() {
+class PlaceOrderDialogFragment : DialogFragment() {
     private var codePasserListener: IOnCodePassListener? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val rootView =
                 inflater.inflate(R.layout.selected_restaurant_item_dialog_layout, container, false)
-
-        dialog.setTitle("Click a button")
 
         setOnClickListeners(rootView)
 

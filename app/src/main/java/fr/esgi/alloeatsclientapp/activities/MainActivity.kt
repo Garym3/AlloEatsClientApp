@@ -21,6 +21,7 @@ import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.BaseAdapter
 import android.widget.ListView
 import android.widget.TextView
 import android.widget.Toast
@@ -38,8 +39,9 @@ import com.inaka.killertask.KillerTask
 import com.jaychang.sa.SocialUser
 import fr.esgi.alloeatsclientapp.R
 import fr.esgi.alloeatsclientapp.api.user.SocialUserAuth
-import fr.esgi.alloeatsclientapp.business.NearbyPlacesBuilder
-import fr.esgi.alloeatsclientapp.business.RestaurantAdapter
+import fr.esgi.alloeatsclientapp.business.adapters.OrderAdapter
+import fr.esgi.alloeatsclientapp.business.builders.NearbyPlacesBuilder
+import fr.esgi.alloeatsclientapp.business.adapters.RestaurantAdapter
 import fr.esgi.alloeatsclientapp.fragments.IOnCodePassListener
 import fr.esgi.alloeatsclientapp.fragments.RestaurantItemDialogFragment
 import fr.esgi.alloeatsclientapp.fragments.RestaurantPageDialogFragment
@@ -58,15 +60,15 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private var mLocationManager: LocationManager? = null
     private var mLocation: Location? = Location("")
     private var shouldUpdate = true
-    private var selectedGoogleRestaurant: Result? = null
-    private lateinit var mainAdapter: RestaurantAdapter
+    private var selectedRestaurant: Result? = null
+    private lateinit var mainAdapter: BaseAdapter
 
     @BindView(R.id.restaurantsList)
     lateinit var mainListView: ListView
 
     @OnItemClick(R.id.restaurantsList)
     internal fun onItemClick(position: Int) {
-        selectedGoogleRestaurant = mainAdapter.getItem(position)
+        selectedRestaurant = mainAdapter.getItem(position) as Result
         showClickedRestaurantAlert()
     }
 
@@ -154,32 +156,41 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        val refreshButton: FloatingActionButton = findViewById(R.id.refreshButton)
+
         when (item.itemId) {
             R.id.nav_finder -> {
-                findViewById<FloatingActionButton>(R.id.refreshButton).show()
-                startActivity(Intent(applicationContext, MapsActivity::class.java))
+                refreshButton.show()
+                startActivity(Intent(this, MapsActivity::class.java))
             }
             R.id.nav_restaurantsList -> {
-                findViewById<FloatingActionButton>(R.id.refreshButton).show()
-
+                refreshButton.show()
                 shouldUpdate = true
                 getNearbyRestaurants()
             }
             R.id.nav_orders -> {
-                //findViewById<FloatingActionButton>(R.id.refreshButton).hide()
-                return false
+                if(Global.myOrders.size <= 0) {
+                    Toast.makeText(this, "No orders yet" , Toast.LENGTH_SHORT).show()
+                    return false
+                }
+                refreshButton.hide()
+                shouldUpdate = false
+
+                mainListView.adapter = null
+                mainAdapter = OrderAdapter(this, Global.myOrders)
+                mainListView.adapter = mainAdapter
             }
             R.id.nav_favorites -> {
-                if(Google.favoriteRestaurants.size <= 0) {
+                if(Global.favoriteRestaurants.size <= 0) {
                     Toast.makeText(this, "No favorite restaurants yet"
                             , Toast.LENGTH_SHORT).show()
                     return false
                 }
-                findViewById<FloatingActionButton>(R.id.refreshButton).hide()
+                refreshButton.hide()
                 shouldUpdate = false
 
                 mainListView.adapter = null
-                mainAdapter = RestaurantAdapter(applicationContext, Google.favoriteRestaurants)
+                mainAdapter = RestaurantAdapter(this, Global.favoriteRestaurants)
                 mainListView.adapter = mainAdapter
             }
             R.id.nav_logout -> {
@@ -192,21 +203,21 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     override fun onCodePass(code: Int) {
-        if(selectedGoogleRestaurant == null) return
+        if(selectedRestaurant == null) return
 
         if(code == Global.codeShowRestaurantPage){
             val fragment = RestaurantPageDialogFragment()
             val bundle = Bundle()
-            bundle.putParcelable("selectedGoogleRestaurant", selectedGoogleRestaurant)
+            bundle.putParcelable("selectedRestaurant", selectedRestaurant)
             fragment.arguments = bundle
             fragment.show(fragmentManager, "RestaurantPageDialogFragment")
         } else if (code == Global.codeAddRestaurantToFavorite){
-            if(Google.favoriteRestaurants.contains(selectedGoogleRestaurant!!)) {
+            if(Global.favoriteRestaurants.contains(selectedRestaurant!!)) {
                 Toast.makeText(this, "This restaurant is already in your favorites"
                         , Toast.LENGTH_SHORT).show()
                 return
             }
-            Google.favoriteRestaurants.add(selectedGoogleRestaurant!!)
+            Global.favoriteRestaurants.add(selectedRestaurant!!)
         }
     }
 
@@ -287,7 +298,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun showClickedRestaurantAlert() {
-        if(selectedGoogleRestaurant == null) return
+        if(selectedRestaurant == null) return
 
         RestaurantItemDialogFragment().show(fragmentManager, "RestaurantItemDialogFragment")
     }
@@ -323,19 +334,32 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     @SuppressLint("MissingPermission")
     private fun requestLocation(){
+        Toast.makeText(this, "Refreshing location results...", Toast.LENGTH_SHORT)
+                .show()
+
         if(isGpsEnabled()){
             mLocationManager?.removeUpdates(this)
             mLocationManager?.requestLocationUpdates(LocationManager.GPS_PROVIDER,
                     10000, 0f, this)
+            return
         } else if(areMobileDataEnabled()){
             mLocationManager?.removeUpdates(this)
             mLocationManager?.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,
                     10000, 0f, this)
+            return
         }
+
+        Toast.makeText(this,
+                "No result found, please enable GPS or INTERNET on your phone.",
+                Toast.LENGTH_SHORT).show()
     }
 
     private fun hasLocationPermissions(): Boolean{
-        return ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
+        return  ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                &&
+                ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
     }
 
     private fun getNearbyRestaurants() {
@@ -349,19 +373,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         val request = JsonObjectRequest(Request.Method.GET, googleNSUrl.toString(), null,
                 Response.Listener<JSONObject> { response ->
-                    Log.i(TAG, "onResponse: GoogleRestaurant= " + response.toString())
+                    Log.i(TAG, "onResponse: Restaurant = " + response.toString())
                     val gson = GsonBuilder().serializeNulls().create()
                     val npBuilder = gson.fromJson(JsonParser().
                             parse(response.toString()), NearbyPlacesBuilder::class.java)
 
                     if(!npBuilder.status.equals("OK")) return@Listener
 
-                    val nearbyRestaurants =
-                            ArrayList(npBuilder.results)
-
-                    //Google.nearbyRestaurants = nearbyRestaurants
-
-                    mainAdapter = RestaurantAdapter(applicationContext, nearbyRestaurants)
+                    mainAdapter = RestaurantAdapter(this, ArrayList(npBuilder.results))
                     mainListView.adapter = mainAdapter
                 },
                 Response.ErrorListener { error ->

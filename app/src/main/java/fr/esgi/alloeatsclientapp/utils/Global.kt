@@ -1,7 +1,9 @@
 package fr.esgi.alloeatsclientapp.utils
 
 import com.paypal.android.sdk.payments.PayPalConfiguration
+import fr.esgi.alloeatsclientapp.models.Order
 import fr.esgi.alloeatsclientapp.models.User
+import fr.esgi.alloeatsclientapp.models.google.details.Result
 
 class Global {
     companion object {
@@ -25,6 +27,9 @@ class Global {
 
         const val codeShowRestaurantPage = 100
         const val codeAddRestaurantToFavorite = 101
+
+        var favoriteRestaurants: ArrayList<Result> = ArrayList()
+        var myOrders: ArrayList<Order> = ArrayList()
 
         private const val paypalClientId =
                 "AabnpXbIPZviyvDhsA2ziJn8-Eq1Yupbyn3__73I7rZf9lX24fK2bMAed5Ix1ndFA-uxvxluPRxKbOhp"
