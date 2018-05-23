@@ -7,7 +7,7 @@
         <item
             android:id="@+id/nav_finder"
             android:icon="@drawable/maps_icon"
-            android:title="@string/restaurant_finder_item_text" />
+            android:title="@string/restaurant_picker_item_text" />
 
         <item
             android:id="@+id/nav_restaurantsList"

@@ -49,8 +49,8 @@ import org.json.JSONException
 import org.json.JSONObject
 
 
-class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener, GoogleApiClient.OnConnectionFailedListener {
-    private val TAG: String = "MapsActivity"
+class RestaurantPickerActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener, GoogleApiClient.OnConnectionFailedListener {
+    private val TAG: String = "RestaurantPickerActivity"
     private lateinit var mMap: GoogleMap
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private var mGeoDataClient: GeoDataClient? = null

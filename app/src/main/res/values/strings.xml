@@ -46,7 +46,7 @@
     <!-- NearbyRestaurantsActivity -->
     <string name="action_preferences">Preferences</string>
     <string name="logout_button">Logout</string>
-    <string name="restaurant_finder_item_text">Restaurant Finder</string>
+    <string name="restaurant_picker_item_text">Restaurant Picker</string>
     <string name="favorites_item_text">Favorites</string>
     <string name="logout_item_text">Logout</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
@@ -61,7 +61,7 @@
     <string name="orders_item_text">My orders</string>
     <string name="pizza_logo_contentDescription_menu_drawer">A pizza… yep</string>
 
-    <!-- MapsActivity -->
+    <!-- RestaurantPickerActivity -->
     <string name="title_activity_maps">Restaurant Finder</string>
     <string name="title_activity_my_orders">MyOrdersActivity</string>
     <string name="action_settings">Settings</string>

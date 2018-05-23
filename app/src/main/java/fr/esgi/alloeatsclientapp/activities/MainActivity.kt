@@ -40,8 +40,8 @@ import com.jaychang.sa.SocialUser
 import fr.esgi.alloeatsclientapp.R
 import fr.esgi.alloeatsclientapp.api.users.SocialUserAuth
 import fr.esgi.alloeatsclientapp.business.adapters.OrderAdapter
-import fr.esgi.alloeatsclientapp.business.builders.NearbyPlacesBuilder
 import fr.esgi.alloeatsclientapp.business.adapters.RestaurantAdapter
+import fr.esgi.alloeatsclientapp.business.builders.NearbyPlacesBuilder
 import fr.esgi.alloeatsclientapp.fragments.IOnCodePassListener
 import fr.esgi.alloeatsclientapp.fragments.RestaurantItemDialogFragment
 import fr.esgi.alloeatsclientapp.fragments.RestaurantPageDialogFragment
@@ -95,12 +95,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onStart() {
         super.onStart()
 
-        if (!hasLocationPermissions()) {
-            ActivityCompat.requestPermissions(this,
-                    arrayOf(Manifest.permission.ACCESS_FINE_LOCATION,
-                            Manifest.permission.ACCESS_COARSE_LOCATION),
-                    LOCATION_PERMISSIONS_REQUEST_CODE)
-        } else if(checkLocation()){
+        if(checkLocation()){
             requestLocation()
             shouldUpdate = true
         }
@@ -131,11 +126,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         when (requestCode) {
             LOCATION_PERMISSIONS_REQUEST_CODE -> {
                 // If request is cancelled, the result arrays are empty.
-                if ((grantResults.isNotEmpty()
-                                && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-
-                    requestLocation()
-
+                if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                    requestingLocation()
                 } else {
                     finish()
                 }
@@ -161,7 +153,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         when (item.itemId) {
             R.id.nav_finder -> {
                 refreshButton.show()
-                startActivity(Intent(this, MapsActivity::class.java))
+                startActivity(Intent(this, RestaurantPickerActivity::class.java))
             }
             R.id.nav_restaurantsList -> {
                 refreshButton.show()
@@ -332,26 +324,43 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         shouldUpdate = false
     }
 
-    @SuppressLint("MissingPermission")
     private fun requestLocation(){
         Toast.makeText(this, "Refreshing location results...", Toast.LENGTH_SHORT)
                 .show()
 
-        if(isGpsEnabled()){
+        if(!hasLocationPermissions()) {
+            requestLocationPermissions()
+            while (!hasLocationPermissions()){}
+            requestingLocation()
+        } else {
+            requestingLocation()
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun requestingLocation() {
+        if (isGpsEnabled()) {
             mLocationManager?.removeUpdates(this)
             mLocationManager?.requestLocationUpdates(LocationManager.GPS_PROVIDER,
                     10000, 0f, this)
-            return
-        } else if(areMobileDataEnabled()){
+        } else if (areMobileDataEnabled()) {
             mLocationManager?.removeUpdates(this)
             mLocationManager?.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,
                     10000, 0f, this)
-            return
+        } else {
+            runOnUiThread {
+                Toast.makeText(this,
+                        "No result found, please enable GPS or INTERNET on your phone.",
+                        Toast.LENGTH_SHORT).show()
+            }
         }
+    }
 
-        Toast.makeText(this,
-                "No result found, please enable GPS or INTERNET on your phone.",
-                Toast.LENGTH_SHORT).show()
+    private fun requestLocationPermissions() {
+        ActivityCompat.requestPermissions(this,
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.ACCESS_COARSE_LOCATION),
+                LOCATION_PERMISSIONS_REQUEST_CODE)
     }
 
     private fun hasLocationPermissions(): Boolean{

@@ -3,20 +3,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="fr.esgi.alloeatsclientapp">
 
-    <!-- GOOGLE MAPS -->
     <permission
         android:name="fr.esgi.alloeatsclientapp.permission.MAPS_RECEIVE"
         android:protectionLevel="signature" />
 
-    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
-    <uses-permission android:name="android.permission.READ_PROFILE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="fr.esgi.alloeatsclientapp.permission.MAPS_RECEIVE" />
     <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <uses-feature android:name="android.hardware.location.gps" />
     <uses-feature
@@ -53,7 +49,7 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".activities.CreateAccountActivity" />
         <activity
-            android:name=".activities.MapsActivity"
+            android:name=".activities.RestaurantPickerActivity"
             android:label="@string/title_activity_maps" />
         <activity android:name=".activities.PaypalCheckoutActivity" />
     </application>
