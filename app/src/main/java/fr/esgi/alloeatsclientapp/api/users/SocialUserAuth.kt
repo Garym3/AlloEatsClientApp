@@ -1,4 +1,4 @@
-package fr.esgi.alloeatsclientapp.api.user
+package fr.esgi.alloeatsclientapp.api.users
 
 import android.content.Context
 import android.content.Intent
@@ -37,6 +37,9 @@ class SocialUserAuth{
         const val FACEBOOK_CANCEL = FACEBOOK + "_CANCEL"
         const val GOOGLE_CANCEL = GOOGLE + "_CANCEL"
         const val TWITTER_CANCEL = TWITTER + "_CANCEL"
+        const val DISCONNECT = "DISCONNECT"
+        const val REVOKE = "REVOKE"
+        private var usedSocialNetwork: String? = null
 
         fun connectFacebook(context: Context) {
             val scopes = Arrays.asList("user_location", "user_link", "public_profile")
@@ -118,25 +121,45 @@ class SocialUserAuth{
             })
         }
 
-        fun disconnect(type: String?) {
+        fun disconnect(context: Context, type: String?) {
             when (type) {
-                FACEBOOK -> SimpleAuth.disconnectFacebook()
-                GOOGLE -> SimpleAuth.disconnectGoogle()
-                TWITTER -> SimpleAuth.disconnectTwitter()
-            }
-
-            Log.i("DISCONNECT", "Disconnected")
-        }
-
-        fun revoke(type: String?) {
-            when (type) {
-                FACEBOOK -> SimpleAuth.revokeFacebook()
-                GOOGLE -> SimpleAuth.revokeGoogle()
-                TWITTER -> { // no-op }
+                FACEBOOK -> {
+                    SimpleAuth.disconnectFacebook()
+                    usedSocialNetwork = FACEBOOK
+                }
+                GOOGLE -> {
+                    SimpleAuth.disconnectGoogle()
+                    usedSocialNetwork = GOOGLE
+                }
+                TWITTER -> {
+                    SimpleAuth.disconnectTwitter()
+                    usedSocialNetwork = TWITTER
                 }
             }
 
-            Log.i("REVOKE", "Revoked")
+            runnableMakeText(context, "Disconnected")
+
+            Log.i(DISCONNECT, "Disconnected from $usedSocialNetwork & credentials saved")
+        }
+
+        fun revoke(context: Context, type: String?) {
+            when (type) {
+                FACEBOOK -> {
+                    SimpleAuth.revokeFacebook()
+                    usedSocialNetwork = FACEBOOK
+                }
+                GOOGLE -> {
+                    SimpleAuth.revokeGoogle()
+                    usedSocialNetwork = GOOGLE
+                }
+                TWITTER -> {
+                    usedSocialNetwork = TWITTER
+                }
+            }
+
+            runnableMakeText(context, "Disconnected from $usedSocialNetwork & credentials not saved")
+
+            Log.i(REVOKE, "Revoked")
         }
 
         private fun putExtraSocialUser(context: Context, socialUser: SocialUser) {
@@ -145,7 +168,7 @@ class SocialUserAuth{
             context.startActivity(intent)
         }
 
-        private fun runnableMakeText(context: Context, text: String){
+        private fun runnableMakeText(context: Context, text: String) {
             Handler(Looper.getMainLooper()).post(
                     {
                         Toast.makeText(context, text, Toast.LENGTH_SHORT).show()

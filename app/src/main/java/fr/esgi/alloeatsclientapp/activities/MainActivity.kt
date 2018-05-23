@@ -38,7 +38,7 @@ import com.google.gson.JsonParser
 import com.inaka.killertask.KillerTask
 import com.jaychang.sa.SocialUser
 import fr.esgi.alloeatsclientapp.R
-import fr.esgi.alloeatsclientapp.api.user.SocialUserAuth
+import fr.esgi.alloeatsclientapp.api.users.SocialUserAuth
 import fr.esgi.alloeatsclientapp.business.adapters.OrderAdapter
 import fr.esgi.alloeatsclientapp.business.builders.NearbyPlacesBuilder
 import fr.esgi.alloeatsclientapp.business.adapters.RestaurantAdapter
@@ -283,15 +283,15 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             Global.CurrentUser.user = null
         } else {
             try {
-                SocialUserAuth.disconnect(SocialUserAuth.FACEBOOK)
-                SocialUserAuth.disconnect(SocialUserAuth.GOOGLE)
-                SocialUserAuth.disconnect(SocialUserAuth.TWITTER)
+                SocialUserAuth.disconnect(this, SocialUserAuth.FACEBOOK)
+                SocialUserAuth.disconnect(this, SocialUserAuth.GOOGLE)
+                SocialUserAuth.disconnect(this, SocialUserAuth.TWITTER)
             } catch (e: Exception){
                 try {
-                    SocialUserAuth.disconnect(SocialUserAuth.GOOGLE)
-                    SocialUserAuth.disconnect(SocialUserAuth.TWITTER)
+                    SocialUserAuth.disconnect(this, SocialUserAuth.GOOGLE)
+                    SocialUserAuth.disconnect(this, SocialUserAuth.TWITTER)
                 } catch (e: Exception){
-                    SocialUserAuth.disconnect(SocialUserAuth.TWITTER)
+                    SocialUserAuth.disconnect(this, SocialUserAuth.TWITTER)
                 }
             }
         }

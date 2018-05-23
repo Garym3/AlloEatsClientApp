@@ -12,7 +12,9 @@ class Global {
         const val PASSWORDREQUIREDCHARS = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}$"
         const val wsPassword = "FeNBGjzDG354@ofe*\$32Rfsss4F"
 
-        // Key for nearby places JSON from Google
+        const val apiAddress: String = "http://192.168.1.12:8090"
+
+        // Keywords for nearby places JSON from Google
         const val GEOMETRY = "geometry"
         const val LOCATION = "location"
         const val LATITUDE = "lat"
@@ -25,12 +27,15 @@ class Global {
         const val VICINITY = "vicinity"
         const val PLACE_NAME = "place_name"
 
+        // Fragment codes
         const val codeShowRestaurantPage = 100
         const val codeAddRestaurantToFavorite = 101
 
+        // Temp stockage ArrayLists
         var favoriteRestaurants: ArrayList<Result> = ArrayList()
         var myOrders: ArrayList<Order> = ArrayList()
 
+        // PAYPAL
         private const val paypalClientId =
                 "AabnpXbIPZviyvDhsA2ziJn8-Eq1Yupbyn3__73I7rZf9lX24fK2bMAed5Ix1ndFA-uxvxluPRxKbOhp"
 

@@ -9,7 +9,7 @@ import android.widget.EditText
 import android.widget.Toast
 import com.inaka.killertask.KillerTask
 import fr.esgi.alloeatsclientapp.R
-import fr.esgi.alloeatsclientapp.api.user.UserAuth
+import fr.esgi.alloeatsclientapp.api.users.UserAuth
 
 class CreateAccountActivity : AppCompatActivity() {
 

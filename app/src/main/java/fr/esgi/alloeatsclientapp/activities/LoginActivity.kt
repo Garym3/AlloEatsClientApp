@@ -26,8 +26,8 @@ import android.widget.TextView
 import com.facebook.CallbackManager
 import com.inaka.killertask.KillerTask
 import fr.esgi.alloeatsclientapp.R
-import fr.esgi.alloeatsclientapp.api.user.SocialUserAuth
-import fr.esgi.alloeatsclientapp.api.user.UserAuth
+import fr.esgi.alloeatsclientapp.api.users.SocialUserAuth
+import fr.esgi.alloeatsclientapp.api.users.UserAuth
 import fr.esgi.alloeatsclientapp.business.LoginRepository
 import kotlinx.android.synthetic.main.activity_login.*
 import java.util.*
