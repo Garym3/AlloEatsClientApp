@@ -25,7 +25,7 @@
             android:textColor="@android:color/background_dark" />
 
         <Button
-            android:id="@+id/openRestaurantMenu_button"
+            android:id="@+id/openRestaurantCard_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="50dp"

@@ -29,13 +29,13 @@ class PlaceOrderDialogFragment : DialogFragment() {
     }
 
     private fun setOnClickListeners(rootView: View) {
-        (rootView.findViewById(R.id.addToFavorites_button) as Button)
+        rootView.findViewById<Button>(R.id.addToFavorites_button)
                 .setOnClickListener({ addRestaurantToFavorites() })
 
-        (rootView.findViewById(R.id.openRestaurantMenu_button) as Button)
+        rootView.findViewById<Button>(R.id.openRestaurantCard_button)
                 .setOnClickListener({ goToRestaurantPage() })
 
-        (rootView.findViewById(R.id.dismissRestaurantItemFragmentDialog_button) as Button)
+        rootView.findViewById<Button>(R.id.dismissRestaurantItemFragmentDialog_button)
                 .setOnClickListener({ dismiss() })
     }
 

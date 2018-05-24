@@ -14,9 +14,11 @@ import fr.esgi.alloeatsclientapp.utils.Global.Companion.codeShowRestaurantPage
 class RestaurantItemDialogFragment : DialogFragment() {
     private var codePasserListener: IOnCodePassListener? = null
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
+                              savedInstanceState: Bundle?): View? {
         val rootView =
-                inflater.inflate(R.layout.selected_restaurant_item_dialog_layout, container, false)
+                inflater.inflate(R.layout.selected_restaurant_item_dialog_layout,
+                        container, false)
 
         dialog.setTitle("Click a button")
 
@@ -31,13 +33,13 @@ class RestaurantItemDialogFragment : DialogFragment() {
     }
 
     private fun setOnClickListeners(rootView: View) {
-        (rootView.findViewById(R.id.addToFavorites_button) as Button)
+        rootView.findViewById<Button>(R.id.addToFavorites_button)
                 .setOnClickListener({ addRestaurantToFavorites() })
 
-        (rootView.findViewById(R.id.openRestaurantMenu_button) as Button)
-                .setOnClickListener({ goToRestaurantPage() })
+        rootView.findViewById<Button>(R.id.openRestaurantCard_button)
+                .setOnClickListener({ goToRestaurantCardFragment() })
 
-        (rootView.findViewById(R.id.dismissRestaurantItemFragmentDialog_button) as Button)
+        rootView.findViewById<Button>(R.id.dismissRestaurantItemFragmentDialog_button)
                 .setOnClickListener({ dismiss() })
     }
 
@@ -46,7 +48,7 @@ class RestaurantItemDialogFragment : DialogFragment() {
         dismiss()
     }
 
-    private fun goToRestaurantPage(){
+    private fun goToRestaurantCardFragment(){
         codePasserListener?.onCodePass(codeShowRestaurantPage)
         dismiss()
     }

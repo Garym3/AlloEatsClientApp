@@ -30,12 +30,12 @@ import hyogeun.github.com.colorratingbarlib.ColorRatingBar
 import org.json.JSONObject
 
 
-class RestaurantPageDialogFragment : DialogFragment() {
+class RestaurantCardDialogFragment : DialogFragment() {
     private lateinit var selectedRestaurant: Result
-    private val TAG: String = "RestaurantPageDialogFragment"
+    private val TAG: String = "RestaurantCardDialogFragment"
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val rootView = inflater.inflate(R.layout.selected_restaurant_page_dialog_layout,
+        val rootView = inflater.inflate(R.layout.selected_restaurant_card_dialog_layout,
                 container, false)
 
         selectedRestaurant = arguments!!.getParcelable("selectedRestaurant")
@@ -47,20 +47,21 @@ class RestaurantPageDialogFragment : DialogFragment() {
         return rootView
     }
 
-    private fun setUIElements(rootView: View) {
+    private fun setUIElements(view: View) {
         dialog.setTitle(selectedRestaurant.name)
 
-        rootView.findViewById<TextView>(R.id.restaurantName_TextView).text =
+        view.findViewById<TextView>(R.id.restaurantName_TextView).text =
                 selectedRestaurant.name
-        rootView.findViewById<TextView>(R.id.restaurantIsOpen_TextView).text =
+        view.findViewById<TextView>(R.id.restaurantIsOpen_TextView).text =
                 toReadableOpenNow(selectedRestaurant.openingHours!!.openNow)
-        rootView.findViewById<ColorRatingBar>(R.id.restaurantRating_Stars).rating =
+        view.findViewById<ColorRatingBar>(R.id.restaurantRating_Stars).rating =
                 selectedRestaurant.rating!!.toFloat()
-        rootView.findViewById<TextView>(R.id.restaurantAddress_TextView).text =
+        view.findViewById<TextView>(R.id.restaurantAddress_TextView).text =
                 selectedRestaurant.vicinity
 
-        (rootView.findViewById(R.id.placeOrder_Button) as Button).setOnClickListener({placeOrder()})
-        (rootView.findViewById(R.id.dismissRestaurantPageFragmentDialog_button) as Button)
+        view.findViewById<Button>(R.id.placeOrder_Button)
+                .setOnClickListener({placeOrder()})
+        view.findViewById<Button>(R.id.dismissRestaurantPageFragmentDialog_button)
                 .setOnClickListener({ dismiss() })
     }
 

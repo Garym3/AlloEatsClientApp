@@ -3,6 +3,7 @@ package fr.esgi.alloeatsclientapp.activities
 import android.Manifest.permission.READ_CONTACTS
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
+import android.annotation.SuppressLint
 import android.annotation.TargetApi
 import android.app.LoaderManager.LoaderCallbacks
 import android.content.CursorLoader
@@ -21,7 +22,6 @@ import android.view.View
 import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
 import android.widget.ArrayAdapter
-import android.widget.Button
 import android.widget.TextView
 import com.facebook.CallbackManager
 import com.inaka.killertask.KillerTask
@@ -38,31 +38,18 @@ class LoginActivity : AppCompatActivity(), LoaderCallbacks<Cursor> {
     private var loginRepository: LoginRepository? = null
     private var userAuth : UserAuth? = UserAuth()
 
-    private var emailTextView: TextView? = null
-    private var passwordTextView: TextView? = null
-    private var loginFacebookButton: Button? = null
-    private var loginGoogleButton: Button? = null
-    private var loginTwitterButton: Button? = null
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         setContentView(R.layout.activity_login)
         populateAutoComplete()
 
         // Hides keyboard on focus only
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN)
 
-        emailTextView = findViewById(R.id.email_EditText)
-        passwordTextView = findViewById(R.id.password_EditText)
-        loginFacebookButton = findViewById(R.id.facebookLogin_Button)
-        loginGoogleButton = findViewById(R.id.googleLogin_Button)
-        loginTwitterButton = findViewById(R.id.twitterLogin_Button)
-
         handleConnection()
 
         loginRepository = LoginRepository(this.applicationContext,
-                emailTextView, passwordTextView)
+                email_EditText, password_EditText)
     }
 
     override fun onResume() {
@@ -84,6 +71,7 @@ class LoginActivity : AppCompatActivity(), LoaderCallbacks<Cursor> {
         loaderManager.initLoader(0, null, this)
     }
 
+    @SuppressLint("ObsoleteSdkInt")
     private fun mayRequestContacts(): Boolean {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             return true
@@ -92,7 +80,7 @@ class LoginActivity : AppCompatActivity(), LoaderCallbacks<Cursor> {
             return true
         }
         if (shouldShowRequestPermissionRationale(READ_CONTACTS)) {
-            Snackbar.make(this.emailTextView!!, R.string.permission_rationale, Snackbar.LENGTH_INDEFINITE)
+            Snackbar.make(email_EditText, R.string.permission_rationale, Snackbar.LENGTH_INDEFINITE)
                     .setAction(android.R.string.ok,
                             { requestPermissions(arrayOf(READ_CONTACTS), REQUEST_READ_CONTACTS) })
         } else {
@@ -142,6 +130,7 @@ class LoginActivity : AppCompatActivity(), LoaderCallbacks<Cursor> {
     /**
      * Shows the progress UI and hides the login form.
      */
+    @SuppressLint("ObsoleteSdkInt")
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
     private fun showProgress(show: Boolean) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
@@ -221,16 +210,16 @@ class LoginActivity : AppCompatActivity(), LoaderCallbacks<Cursor> {
             false
         })
 
-        loginFacebookButton?.setOnClickListener({
-            SocialUserAuth.connectFacebook(applicationContext)
+        facebookLogin_Button.setOnClickListener({
+            SocialUserAuth.connectFacebook(this@LoginActivity)
         })
 
-        loginGoogleButton?.setOnClickListener({
-            SocialUserAuth.connectGoogle(applicationContext)
+        googleLogin_Button.setOnClickListener({
+            SocialUserAuth.connectGoogle(this@LoginActivity)
         })
 
-        loginTwitterButton?.setOnClickListener({
-            SocialUserAuth.connectTwitter(applicationContext)
+        twitterLogin_Button.setOnClickListener({
+            SocialUserAuth.connectTwitter(this@LoginActivity)
         })
     }
 

@@ -25,7 +25,7 @@ class CarouselAdapter(private val mContext: Context) :
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         val itemView = LayoutInflater.from(parent.context)
-                .inflate(R.layout.restaurant_page_carousel_layout, parent, false)
+                .inflate(R.layout.restaurant_card_carousel_layout, parent, false)
 
         return MyViewHolder(itemView)
     }

@@ -2,6 +2,7 @@ package fr.esgi.alloeatsclientapp.activities
 
 import android.app.Activity
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
@@ -13,6 +14,7 @@ import com.paypal.android.sdk.payments.PayPalService
 import com.paypal.android.sdk.payments.PaymentActivity
 import com.paypal.android.sdk.payments.PaymentConfirmation
 import fr.esgi.alloeatsclientapp.R
+import kotlinx.android.synthetic.main.app_bar_main.*
 import org.json.JSONException
 
 import org.json.JSONObject
@@ -31,6 +33,7 @@ public class PaypalCheckoutActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        toolbar.setBackgroundColor(Color.parseColor("#ffb200"))
 
         paymentButton = findViewById(R.id.paymentButton)
         paymentButton!!.setOnClickListener({onBuyPressed()})
