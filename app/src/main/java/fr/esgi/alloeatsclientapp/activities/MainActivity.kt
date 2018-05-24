@@ -33,6 +33,11 @@ import com.android.volley.RequestQueue
 import com.android.volley.Response
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
+import com.google.android.gms.common.api.Status
+import com.google.android.gms.location.places.AutocompleteFilter
+import com.google.android.gms.location.places.Place
+import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment
+import com.google.android.gms.location.places.ui.PlaceSelectionListener
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonParser
 import com.inaka.killertask.KillerTask
@@ -41,6 +46,7 @@ import fr.esgi.alloeatsclientapp.R
 import fr.esgi.alloeatsclientapp.api.users.SocialUserAuth
 import fr.esgi.alloeatsclientapp.business.adapters.OrderAdapter
 import fr.esgi.alloeatsclientapp.business.adapters.RestaurantAdapter
+import fr.esgi.alloeatsclientapp.business.builders.DetailsBuilder
 import fr.esgi.alloeatsclientapp.business.builders.NearbyPlacesBuilder
 import fr.esgi.alloeatsclientapp.fragments.IOnCodePassListener
 import fr.esgi.alloeatsclientapp.fragments.RestaurantItemDialogFragment
@@ -90,6 +96,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         setNavigationView()
 
         setDisplayedCredentials()
+
+        setPlaceAutocompleteFragment()
     }
 
     override fun onStart() {
@@ -295,6 +303,72 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         RestaurantItemDialogFragment().show(fragmentManager, "RestaurantItemDialogFragment")
     }
 
+    private fun setPlaceAutocompleteFragment() {
+        val autocompleteFragment =
+                fragmentManager.findFragmentById(R.id.place_autocomplete_fragment)
+                        as PlaceAutocompleteFragment
+        val typeFilter =
+                AutocompleteFilter.Builder()
+                        .setTypeFilter(AutocompleteFilter.TYPE_FILTER_ESTABLISHMENT).build()
+
+        //autocompleteFragment.setBoundsBias(LatLngBounds())
+        autocompleteFragment.setFilter(typeFilter)
+        autocompleteFragment.setOnPlaceSelectedListener(object : PlaceSelectionListener {
+            override fun onPlaceSelected(place: Place) {
+                getSelectedAutocompletePlace(place)
+
+                Log.i(TAG, "Place: " + place.name)
+            }
+
+            override fun onError(status: Status) {
+                Toast.makeText(this@MainActivity, "An error occurred.",
+                        Toast.LENGTH_SHORT).show()
+
+                Log.i(TAG, "An error occurred: $status")
+            }
+          })
+    }
+
+    private fun getSelectedAutocompletePlace(place: Place){
+        val queue: RequestQueue = Volley.newRequestQueue(this@MainActivity)
+
+        val googleDetailsUrl = buildGoogleDetailsUrlRequest(place.id)
+
+        val request = JsonObjectRequest(Request.Method.GET, googleDetailsUrl.toString(),
+                null, Response.Listener<JSONObject> { response ->
+
+            Log.i(TAG, "onResponse - Place = $response")
+            val gson = GsonBuilder().serializeNulls().create()
+            val detailsBuilder =
+                    gson.fromJson(JsonParser().parse(response.toString()),
+                            DetailsBuilder::class.java)
+
+            if (!detailsBuilder.status.equals("OK")) return@Listener
+
+            selectedRestaurant = detailsBuilder.result
+
+            showClickedRestaurantAlert()
+        },
+                Response.ErrorListener { error ->
+                    Log.e(TAG, "onErrorResponse: Error= $error")
+                    Log.e(TAG, "onErrorResponse: Error= " + error?.message)
+                }
+        )
+
+        queue.add(request)
+    }
+
+    private fun buildGoogleDetailsUrlRequest(id: String?): StringBuilder? {
+        val googleDetailsUri =
+                StringBuilder("https://maps.googleapis.com/maps/api/place/details/json?")
+                        .append("placeid=").append(id)
+                        .append("&key=${Google.GOOGLE_BROWSER_API_KEY}")
+
+        Log.i("$TAG: Google Details API Request", googleDetailsUri.toString())
+
+        return googleDetailsUri
+    }
+
     ///// LOCATION /////
 
     @SuppressLint("MissingPermission")
@@ -339,16 +413,18 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     @SuppressLint("MissingPermission")
     private fun requestingLocation() {
-        if (isGpsEnabled()) {
-            mLocationManager?.removeUpdates(this)
-            mLocationManager?.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-                    10000, 0f, this)
-        } else if (areMobileDataEnabled()) {
-            mLocationManager?.removeUpdates(this)
-            mLocationManager?.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,
-                    10000, 0f, this)
-        } else {
-            runOnUiThread {
+        when {
+            isGpsEnabled() -> {
+                mLocationManager?.removeUpdates(this)
+                mLocationManager?.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+                        10000, 0f, this)
+            }
+            areMobileDataEnabled() -> {
+                mLocationManager?.removeUpdates(this)
+                mLocationManager?.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,
+                        10000, 0f, this)
+            }
+            else -> runOnUiThread {
                 Toast.makeText(this,
                         "No result found, please enable GPS or INTERNET on your phone.",
                         Toast.LENGTH_SHORT).show()
@@ -418,7 +494,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private fun checkLocation(): Boolean {
         if(!isLocationEnabled()) {
-            showAlert()
+            showLocationPermissionAlert()
             return false
         }
         return isLocationEnabled()
@@ -436,7 +512,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return isGpsEnabled() || areMobileDataEnabled()
     }
 
-    private fun showAlert() {
+    private fun showLocationPermissionAlert() {
         val dialog = AlertDialog.Builder(this)
         dialog.setTitle("Enable Location")
                 .setMessage("Your Locations Settings is set to 'Off'." +
