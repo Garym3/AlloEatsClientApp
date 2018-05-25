@@ -31,7 +31,7 @@ class Global {
         const val codeShowRestaurantPage = 100
         const val codeAddRestaurantToFavorite = 101
 
-        // Temp stockage ArrayLists
+        // Temp storage ArrayLists
         var favoriteRestaurants: ArrayList<Result> = ArrayList()
         var myOrders: ArrayList<Order> = ArrayList()
 

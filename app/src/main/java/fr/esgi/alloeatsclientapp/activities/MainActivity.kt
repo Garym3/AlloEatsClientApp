@@ -401,16 +401,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun requestLocation(){
-        Toast.makeText(this, "Refreshing location results...", Toast.LENGTH_SHORT)
-                .show()
-
         if(!hasLocationPermissions()) {
             requestLocationPermissions()
             while (!hasLocationPermissions()){}
-            requestingLocation()
-        } else {
-            requestingLocation()
         }
+
+        Toast.makeText(this, "Refreshing location results...", Toast.LENGTH_SHORT)
+                .show()
+        requestingLocation()
     }
 
     @SuppressLint("MissingPermission")
@@ -421,7 +419,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 mLocationManager?.requestLocationUpdates(LocationManager.GPS_PROVIDER,
                         10000, 0f, this)
             }
-            areMobileDataEnabled() -> {
+            isInternetEnabled() -> {
                 mLocationManager?.removeUpdates(this)
                 mLocationManager?.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,
                         10000, 0f, this)
@@ -506,12 +504,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return mLocationManager!!.isProviderEnabled(LocationManager.GPS_PROVIDER)
     }
 
-    private fun areMobileDataEnabled(): Boolean{
+    private fun isInternetEnabled(): Boolean{
         return mLocationManager!!.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
     }
 
     private fun isLocationEnabled(): Boolean {
-        return isGpsEnabled() || areMobileDataEnabled()
+        return isGpsEnabled() || isInternetEnabled()
     }
 
     private fun showLocationPermissionAlert() {
