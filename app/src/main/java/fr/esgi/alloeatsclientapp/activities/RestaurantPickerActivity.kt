@@ -45,7 +45,6 @@ import fr.esgi.alloeatsclientapp.utils.Global.Companion.LONGITUDE
 import fr.esgi.alloeatsclientapp.utils.Global.Companion.NAME
 import fr.esgi.alloeatsclientapp.utils.Global.Companion.VICINITY
 import fr.esgi.alloeatsclientapp.utils.Google
-import kotlinx.android.synthetic.main.app_bar_main.*
 import org.json.JSONException
 import org.json.JSONObject
 
@@ -68,7 +67,6 @@ class RestaurantPickerActivity : AppCompatActivity(), OnMapReadyCallback, Locati
         }
 
         setContentView(R.layout.activity_restaurant_picker)
-        toolbar.setBackgroundColor(Color.parseColor("#ffb200"))
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
