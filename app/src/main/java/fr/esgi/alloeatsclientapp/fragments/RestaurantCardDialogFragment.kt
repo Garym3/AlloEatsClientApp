@@ -38,7 +38,7 @@ class RestaurantCardDialogFragment : DialogFragment() {
         val rootView = inflater.inflate(R.layout.selected_restaurant_card_dialog_layout,
                 container, false)
 
-        selectedRestaurant = arguments!!.getParcelable("selectedRestaurant")
+        selectedRestaurant = arguments!!.getParcelable("mSelectedRestaurant")
 
         setUIElements(rootView)
 

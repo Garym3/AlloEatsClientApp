@@ -8,12 +8,8 @@ import android.widget.BaseAdapter
 import android.widget.TextView
 import butterknife.BindView
 import butterknife.ButterKnife
-import com.squareup.picasso.Picasso
 import fr.esgi.alloeatsclientapp.R
 import fr.esgi.alloeatsclientapp.models.Order
-import fr.esgi.alloeatsclientapp.models.google.details.Result
-import fr.esgi.alloeatsclientapp.utils.Google
-import java.util.*
 
 
 class OrderAdapter(context: Context, private val orders: ArrayList<Order>) : BaseAdapter() {

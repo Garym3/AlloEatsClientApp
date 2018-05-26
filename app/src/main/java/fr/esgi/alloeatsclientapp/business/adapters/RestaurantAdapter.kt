@@ -17,8 +17,6 @@ import java.util.*
 
 
 class RestaurantAdapter(context: Context, private val googleRestaurants: ArrayList<Result>) : BaseAdapter() {
-    private val sb = StringBuilder()
-
     override fun getItem(position: Int) = googleRestaurants[position]
 
     override fun getItemId(position: Int) = position.toLong()
@@ -39,10 +37,15 @@ class RestaurantAdapter(context: Context, private val googleRestaurants: ArrayLi
             holder = view.tag as ViewHolder
         }
 
-        // Get the data item for this position
-        val restaurant = getItem(position)
+        return setHolderView(holder, getItem(position), view)
+    }
 
-        // Populate the data into the template view using the data object
+    /**
+     * Populate the data into the template view using the data object
+     */
+    private fun setHolderView(holder: ViewHolder, restaurant: Result, view: View): View {
+        val sb = StringBuilder()
+
         holder.name.text = sb.append("Name: ").append(restaurant.name)
         sb.setLength(0)
         holder.isOpen.text = sb.append("Is open: ").append(toReadableOpenNow(restaurant.openingHours?.openNow))
@@ -52,7 +55,7 @@ class RestaurantAdapter(context: Context, private val googleRestaurants: ArrayLi
         holder.address.text = sb.append("Address: ").append(restaurant.vicinity)
         sb.setLength(0)
 
-        if(restaurant.photos?.get(0)?.photoReference != null){
+        if (restaurant.photos?.get(0)?.photoReference != null) {
             val maxWidth = 256
             val maxHeight = 256
             val photoReference = restaurant.photos?.get(0)?.photoReference

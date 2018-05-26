@@ -68,7 +68,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private var mLocationManager: LocationManager? = null
     private var mLocation: Location? = Location("")
     private var mShouldUpdate = true
-    private var selectedRestaurant: Result? = null
+    private var mSelectedRestaurant: Result? = null
     private lateinit var mMainAdapter: BaseAdapter
 
     @BindView(R.id.restaurantsList)
@@ -76,7 +76,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     @OnItemClick(R.id.restaurantsList)
     internal fun onItemClick(position: Int) {
-        selectedRestaurant = mMainAdapter.getItem(position) as Result
+        mSelectedRestaurant = mMainAdapter.getItem(position) as Result
         showClickedRestaurantAlert()
     }
 
@@ -170,29 +170,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 getNearbyRestaurants()
             }
             R.id.nav_orders -> {
-                if(Global.myOrders.size <= 0) {
-                    Toast.makeText(this, "No orders yet" , Toast.LENGTH_SHORT).show()
-                    return false
-                }
-                refresh_button.hide()
-                mShouldUpdate = false
-
-                mainListView.adapter = null
-                mMainAdapter = OrderAdapter(this, Global.myOrders)
-                mainListView.adapter = mMainAdapter
+                if (!setNavOrdersResult()) return false
             }
             R.id.nav_favorites -> {
-                if(Global.favoriteRestaurants.size <= 0) {
-                    Toast.makeText(this, "No favorite restaurants yet"
-                            , Toast.LENGTH_SHORT).show()
-                    return false
-                }
-                refresh_button.hide()
-                mShouldUpdate = false
-
-                mainListView.adapter = null
-                mMainAdapter = RestaurantAdapter(this, Global.favoriteRestaurants)
-                mainListView.adapter = mMainAdapter
+                if (!setNavFavoritesResult()) return false
             }
             R.id.nav_logout -> {
                 finish()
@@ -204,22 +185,51 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     override fun onCodePass(code: Int) {
-        if(selectedRestaurant == null) return
+        if(mSelectedRestaurant == null) return
 
         if(code == Global.codeShowRestaurantPage){
             val fragment = RestaurantCardDialogFragment()
             val bundle = Bundle()
-            bundle.putParcelable("selectedRestaurant", selectedRestaurant)
+            bundle.putParcelable("mSelectedRestaurant", mSelectedRestaurant)
             fragment.arguments = bundle
             fragment.show(fragmentManager, "RestaurantCardDialogFragment")
         } else if (code == Global.codeAddRestaurantToFavorite){
-            if(Global.favoriteRestaurants.contains(selectedRestaurant!!)) {
+            if(Global.favoriteRestaurants.contains(mSelectedRestaurant!!)) {
                 Toast.makeText(this, "This restaurant is already in your favorites"
                         , Toast.LENGTH_SHORT).show()
                 return
             }
-            Global.favoriteRestaurants.add(selectedRestaurant!!)
+            Global.favoriteRestaurants.add(mSelectedRestaurant!!)
         }
+    }
+
+    private fun setNavOrdersResult(): Boolean {
+        if (Global.myOrders.size <= 0) {
+            Toast.makeText(this, "No orders yet", Toast.LENGTH_SHORT).show()
+            return false
+        }
+        refresh_button.hide()
+        mShouldUpdate = false
+
+        mainListView.adapter = null
+        mMainAdapter = OrderAdapter(this, Global.myOrders)
+        mainListView.adapter = mMainAdapter
+        return true
+    }
+
+    private fun setNavFavoritesResult(): Boolean {
+        if (Global.favoriteRestaurants.size <= 0) {
+            Toast.makeText(this, "No favorite restaurants yet"
+                    , Toast.LENGTH_SHORT).show()
+            return false
+        }
+        refresh_button.hide()
+        mShouldUpdate = false
+
+        mainListView.adapter = null
+        mMainAdapter = RestaurantAdapter(this, Global.favoriteRestaurants)
+        mainListView.adapter = mMainAdapter
+        return true
     }
 
     private fun setNavigationView() {
@@ -296,7 +306,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun showClickedRestaurantAlert() {
-        if(selectedRestaurant == null) return
+        if(mSelectedRestaurant == null) return
 
         RestaurantItemDialogFragment().show(fragmentManager, "RestaurantItemDialogFragment")
     }
@@ -318,6 +328,15 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         autocompleteFragment.setFilter(typeFilter)
         autocompleteFragment.setOnPlaceSelectedListener(object : PlaceSelectionListener {
             override fun onPlaceSelected(place: Place) {
+                if(!place.isDataValid) {
+                    Toast.makeText(this@MainActivity, "This place's data are invalid.",
+                            Toast.LENGTH_SHORT).show()
+
+                    Log.i(TAG, "This place's data are invalid: $place")
+
+                    return
+                }
+
                 getSelectedAutocompletePlace(place)
 
                 Log.i(TAG, "Place: " + place.name)
@@ -347,8 +366,15 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                             DetailsBuilder::class.java)
 
             if (!detailsBuilder.status.equals("OK")) return@Listener
+            if (!detailsBuilder.result!!.types!!.containsAll(arrayOf("restaurant", "food").toList())){
+                Toast.makeText(this@MainActivity, "This place is not a restaurant.",
+                        Toast.LENGTH_SHORT).show()
 
-            selectedRestaurant = detailsBuilder.result
+                Log.i(TAG, "This place is not a restaurant: ${detailsBuilder.result.toString()}")
+                return@Listener
+            }
+
+            mSelectedRestaurant = detailsBuilder.result
 
             showClickedRestaurantAlert()
         },
@@ -452,6 +478,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             mShouldUpdate = true
             return
         }
+
+        //mLocation?.latitude = 48.864716
+        //mLocation?.longitude = 2.349014
 
         val googleNSUrl = buildGoogleNSUrlRequest()
         val queue: RequestQueue = Volley.newRequestQueue(this)
