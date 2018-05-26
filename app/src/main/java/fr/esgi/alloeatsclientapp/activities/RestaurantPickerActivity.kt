@@ -158,11 +158,11 @@ class RestaurantPickerActivity : AppCompatActivity(), OnMapReadyCallback, Locati
             return
         }
 
-        val location = locationManager?.getLastKnownLocation(bestProvider)
+        /*val location = locationManager?.getLastKnownLocation(bestProvider)
 
         if (location != null) {
             onLocationChanged(location)
-        }
+        }*/
 
         locationManager?.requestLocationUpdates(bestProvider, Google.MIN_TIME_BW_UPDATES,
                 Google.MIN_DISTANCE_CHANGE_FOR_UPDATES, this)

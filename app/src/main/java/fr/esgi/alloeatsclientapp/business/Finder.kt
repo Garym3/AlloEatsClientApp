@@ -81,7 +81,7 @@ class Finder(val mContext: Context, var fragmentManager: FragmentManager, var ma
     }
 
     override fun onProviderEnabled(p0: String?) {
-        requestLocation()
+        //requestLocation()
         mShouldUpdate = true
     }
 

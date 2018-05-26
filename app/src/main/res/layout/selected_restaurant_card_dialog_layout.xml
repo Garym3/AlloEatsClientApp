@@ -44,7 +44,7 @@
             android:layout_marginTop="32dp"
             android:textAlignment="center"
             android:textColor="@color/tw__solid_white"
-            app:layout_constraintBottom_toTopOf="@+id/placeOrder_Button"
+            app:layout_constraintBottom_toTopOf="@+id/show_menus_Button"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/restaurantAddress_TextView"

@@ -68,13 +68,13 @@ class RestaurantCardDialogFragment : DialogFragment() {
                     selectedRestaurant.vicinity
                 } else null
 
-        view.findViewById<Button>(R.id.placeOrder_Button)
-                .setOnClickListener({placeOrder()})
+        view.findViewById<Button>(R.id.show_menus_Button)
+                .setOnClickListener({ showMenu() })
         view.findViewById<Button>(R.id.dismissRestaurantPageFragmentDialog_button)
                 .setOnClickListener({ dismiss() })
     }
 
-    private fun placeOrder() {
+    private fun showMenu() {
         //TODO: Start MyOrder fragment
 
     }

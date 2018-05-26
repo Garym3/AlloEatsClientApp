@@ -71,5 +71,6 @@
     <string name="place_order_button_text">Place Order</string>
     <string name="main_photo_restaurant_page_fragment_ImageView">Main photo of this restaurant</string>
     <string name="nearby_restaurants_item_text">Nearby Restaurants</string>
+    <string name="menu_background_ImageView_restaurant_menu_row">Menu background image</string>
 
 </resources>
