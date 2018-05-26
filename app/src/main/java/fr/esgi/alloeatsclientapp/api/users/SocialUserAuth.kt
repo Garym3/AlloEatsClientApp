@@ -3,6 +3,7 @@ package fr.esgi.alloeatsclientapp.api.users
 import android.content.Context
 import android.content.Intent
 import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.widget.Toast
 import com.jaychang.sa.AuthCallback
@@ -18,9 +19,6 @@ import com.jaychang.sa.twitter.connectTwitter
 import com.jaychang.sa.twitter.disconnectTwitter
 import fr.esgi.alloeatsclientapp.activities.MainActivity
 import java.util.*
-import android.os.Looper
-
-
 
 
 class SocialUserAuth{
@@ -39,7 +37,7 @@ class SocialUserAuth{
         const val TWITTER_CANCEL = TWITTER + "_CANCEL"
         const val DISCONNECT = "DISCONNECT"
         const val REVOKE = "REVOKE"
-        private var usedSocialNetwork: String? = null
+        var usedSocialNetwork: String? = null
 
         fun connectFacebook(context: Context) {
             val scopes = Arrays.asList("user_location", "user_link", "public_profile")

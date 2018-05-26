@@ -26,7 +26,7 @@ class Viewport : Serializable, Parcelable {
      * No args constructor for use in serialization
      *
      */
-    constructor() {}
+    constructor()
 
     /**
      *

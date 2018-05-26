@@ -1,13 +1,48 @@
 package fr.esgi.alloeatsclientapp.business
 
-/*class Finder(private val mContext: Context, private var fragmentManager: FragmentManager,
-             private val mLocationManager: LocationManager?, private var mLocation: Location?,
-             private var mShouldUpdate: Boolean, var mMainAdapter: BaseAdapter?,
-             var mainListView: ListView?)
+import android.Manifest
+import android.app.Activity
+import android.app.AlertDialog
+import android.app.FragmentManager
+import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.location.Location
+import android.location.LocationListener
+import android.location.LocationManager
+import android.location.LocationProvider
+import android.os.Bundle
+import android.provider.Settings
+import android.support.v4.app.ActivityCompat
+import android.util.Log
+import android.widget.BaseAdapter
+import android.widget.ListView
+import android.widget.Toast
+import com.android.volley.Request
+import com.android.volley.RequestQueue
+import com.android.volley.Response
+import com.android.volley.toolbox.JsonObjectRequest
+import com.android.volley.toolbox.Volley
+import com.google.gson.GsonBuilder
+import com.google.gson.JsonParser
+import fr.esgi.alloeatsclientapp.business.adapters.RestaurantAdapter
+import fr.esgi.alloeatsclientapp.business.builders.NearbyPlacesBuilder
+import fr.esgi.alloeatsclientapp.fragments.IOnCodePassListener
+import fr.esgi.alloeatsclientapp.fragments.RestaurantCardDialogFragment
+import fr.esgi.alloeatsclientapp.fragments.RestaurantItemDialogFragment
+import fr.esgi.alloeatsclientapp.utils.Global
+import fr.esgi.alloeatsclientapp.utils.Google
+import org.json.JSONObject
+
+class Finder(val mContext: Context, var fragmentManager: FragmentManager, var mainListView: ListView?)
     : LocationListener, IOnCodePassListener {
 
     private val TAG = "Finder"
-    private val LOCATION_PERMISSIONS_REQUEST_CODE = 1
+    val LOCATION_PERMISSIONS_REQUEST_CODE = 1
+    var mLocationManager: LocationManager? = null
+    var mLocation: Location? = Location("")
+    var mMainAdapter: BaseAdapter? = null
+    var mShouldUpdate = true
 
     override fun onCodePass(code: Int) {
         if(Google.selectedRestaurant == null) return
@@ -200,4 +235,10 @@ package fr.esgi.alloeatsclientapp.business
             }
         }
     }
-}*/
+
+    fun showClickedRestaurantAlert() {
+        if(Google.selectedRestaurant == null) return
+
+        RestaurantItemDialogFragment().show(fragmentManager, "RestaurantItemDialogFragment")
+    }
+}

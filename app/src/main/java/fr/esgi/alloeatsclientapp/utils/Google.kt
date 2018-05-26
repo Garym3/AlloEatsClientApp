@@ -20,10 +20,12 @@ class Google {
         const val TYPE = "restaurant"
         const val KEYWORD = "restaurant"
 
+        var selectedRestaurant: Result? = null
+
         // The minimum distance to change Updates in meters
         const val MIN_DISTANCE_CHANGE_FOR_UPDATES: Float = 10f // meters
 
         // The minimum time between updates in minutes
-        const val MIN_TIME_BW_UPDATES = (1000 * 60 * 1).toLong() // minutes
+        const val MIN_TIME_BW_UPDATES = (1000 * 60).toLong() // minutes
     }
 }

@@ -20,7 +20,7 @@ import org.json.JSONException
 import org.json.JSONObject
 import java.math.BigDecimal
 
-public class PaypalCheckoutActivity : AppCompatActivity() {
+class PaypalCheckoutActivity : AppCompatActivity() {
 
     private val requestCodePayment = 1
 
@@ -39,7 +39,7 @@ public class PaypalCheckoutActivity : AppCompatActivity() {
         paymentButton!!.setOnClickListener({onBuyPressed()})
     }
 
-    public fun onBuyPressed() {
+    fun onBuyPressed() {
         val thingToBuy: PayPalPayment = getThingToBuy(PayPalPayment.PAYMENT_INTENT_SALE)
         val intent = Intent(this@PaypalCheckoutActivity, PaymentActivity::class.java)
         intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION, "") //TODO

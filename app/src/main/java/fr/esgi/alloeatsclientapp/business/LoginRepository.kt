@@ -7,14 +7,14 @@ import android.widget.TextView
 import fr.esgi.alloeatsclientapp.R
 import fr.esgi.alloeatsclientapp.utils.Check
 
-public class LoginRepository(private val context: Context?, private val loginField: TextView?, private val passwordField: TextView?){
+class LoginRepository(private val context: Context?, private val loginField: TextView?, private val passwordField: TextView?){
 
     /**
      * Attempts to sign in or register the account specified by the login form.
      * If there are form errors (invalid email, missing fields, etc.), the
      * errors are presented and no actual login attempt is made.
      */
-    public fun attemptLogin(): Boolean {
+    fun attemptLogin(): Boolean {
         // Reset
         setCredentials(null, null)
 
@@ -55,24 +55,24 @@ public class LoginRepository(private val context: Context?, private val loginFie
         }
     }
 
-    public fun setCredentials(emailValue: String?, passwordValue: String?) {
+    fun setCredentials(emailValue: String?, passwordValue: String?) {
         loginField?.setText(emailValue, TextView.BufferType.EDITABLE)
         passwordField?.setText(passwordValue, TextView.BufferType.EDITABLE)
     }
 
-    public fun isEmailValid(email: String): Boolean {
+    fun isEmailValid(email: String): Boolean {
         return Check.emailStructure(email)
     }
 
-    public fun isPasswordValid(password: String): Boolean {
+    fun isPasswordValid(password: String): Boolean {
         return Check.passwordStructure(password)
     }
 
-    public fun getEmailValue(): String{
+    fun getEmailValue(): String{
         return loginField?.text.toString()
     }
 
-    public fun getPasswordValue(): String{
+    fun getPasswordValue(): String{
         return passwordField?.text.toString()
     }
 }

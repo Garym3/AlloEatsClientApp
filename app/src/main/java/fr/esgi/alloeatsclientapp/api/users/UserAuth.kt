@@ -3,7 +3,6 @@ package fr.esgi.alloeatsclientapp.api.users
 import android.content.Context
 import android.content.Intent
 import android.util.Log
-
 import com.android.volley.Request
 import com.android.volley.RequestQueue
 import com.android.volley.Response
@@ -11,12 +10,10 @@ import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
 import fr.esgi.alloeatsclientapp.activities.CreateAccountActivity
 import fr.esgi.alloeatsclientapp.activities.MainActivity
-
-import org.json.JSONException
-import org.json.JSONObject
-
 import fr.esgi.alloeatsclientapp.models.User
 import fr.esgi.alloeatsclientapp.utils.Global
+import org.json.JSONException
+import org.json.JSONObject
 
 
 class UserAuth {
