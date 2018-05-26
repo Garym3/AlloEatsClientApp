@@ -479,8 +479,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             return
         }
 
-        //mLocation?.latitude = 48.864716
-        //mLocation?.longitude = 2.349014
+        //mLocation?.latitude = 48.848389
+        //mLocation?.longitude = 2.3958
 
         val googleNSUrl = buildGoogleNSUrlRequest()
         val queue: RequestQueue = Volley.newRequestQueue(this)

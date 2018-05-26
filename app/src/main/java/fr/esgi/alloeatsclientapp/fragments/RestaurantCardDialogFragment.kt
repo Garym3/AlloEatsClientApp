@@ -51,13 +51,22 @@ class RestaurantCardDialogFragment : DialogFragment() {
         dialog.setTitle(selectedRestaurant.name)
 
         view.findViewById<TextView>(R.id.restaurantName_TextView).text =
+                if(selectedRestaurant.name != null){
+                    selectedRestaurant.name
+                } else null
                 selectedRestaurant.name
         view.findViewById<TextView>(R.id.restaurantIsOpen_TextView).text =
-                toReadableOpenNow(selectedRestaurant.openingHours!!.openNow)
+                if(selectedRestaurant.openingHours != null) {
+                    toReadableOpenNow(selectedRestaurant.openingHours!!.openNow)
+                } else null
         view.findViewById<ColorRatingBar>(R.id.restaurantRating_Stars).rating =
-                selectedRestaurant.rating!!.toFloat()
+                if(selectedRestaurant.rating != null) {
+                    selectedRestaurant.rating!!.toFloat()
+                } else 0.0f
         view.findViewById<TextView>(R.id.restaurantAddress_TextView).text =
-                selectedRestaurant.vicinity
+                if(selectedRestaurant.vicinity != null){
+                    selectedRestaurant.vicinity
+                } else null
 
         view.findViewById<Button>(R.id.placeOrder_Button)
                 .setOnClickListener({placeOrder()})
@@ -98,10 +107,9 @@ class RestaurantCardDialogFragment : DialogFragment() {
                             DetailsBuilder::class.java)
 
             if (!detailsBuilder.status.equals("OK")) return@Listener
+            if(detailsBuilder.result?.photos == null) return@Listener
 
-            val restaurantDetails = detailsBuilder.result?.photos!!
-
-            for (photo: Photo in restaurantDetails) {
+            for (photo: Photo in detailsBuilder.result?.photos!!) {
                 if(photo.photoReference == null) continue
 
                 val googleDetailsStr =

@@ -16,7 +16,7 @@ class Google {
 
         const val GOOGLE_BROWSER_API_KEY = "AIzaSyByPm_M8iKQpDqteolcEYtz4YcfKDFZL_M"
         const val PLAY_SERVICES_RESOLUTION_REQUEST = 9000
-        const val PROXIMITY_RADIUS = 5000 // meters
+        const val PROXIMITY_RADIUS = 1000 // meters
         const val TYPE = "restaurant"
         const val KEYWORD = "restaurant"
 
