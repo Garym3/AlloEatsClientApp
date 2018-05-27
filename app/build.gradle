@@ -17,19 +17,19 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     //Signing configurations for build variants "release"
-    signingConfigs {
+    /*signingConfigs {
         release {
             storeFile file("C:\\Users\\Travail\\.android\\alloeatsclient.jks")
             storePassword "alloeats"
             keyAlias "production"
             keyPassword "android"
         }
-    }
+    }*/
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.release
+            //signingConfig signingConfigs.release
         }
     }
     configurations.all {
