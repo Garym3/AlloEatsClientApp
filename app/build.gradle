@@ -16,6 +16,15 @@ android {
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
+    //Signing configurations for build variants "release"
+    /*signingConfigs {
+        release {
+            storeFile file("C:\\Users\\Travail\\.android\\alloeatsclient.jks")
+            storePassword "alloeats"
+            keyAlias "production"
+            keyPassword "android"
+        }
+    }*/
     buildTypes {
         release {
             minifyEnabled false
